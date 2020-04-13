@@ -2,5 +2,6 @@
 temp_directory: tmp{{ awx_job_id | default('') }}
 
 iso_file: "windows_{{ template.name }}_autounattend{{ awx_job_id | default('') }}.iso"
+iso_pvc_name: "iso-auto-{{ (iso_file + template.name) | to_uuid }}"
 
 vm_os_type: "{{ nodes_os_type[template.name] | default('redhat') }}"

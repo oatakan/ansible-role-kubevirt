@@ -119,5 +119,5 @@ spec:
 {% else %}
         - name: cd-drive-1
           persistentVolumeClaim:
-            claimName: iso-auto-{{ iso_file | to_uuid }}
+            claimName: {{ iso_pvc_name }}
 {% endif %}
