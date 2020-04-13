@@ -1,7 +1,7 @@
 apiVersion: cdi.kubevirt.io/v1alpha1
 kind: DataVolume
 metadata:
-  name: iso-auto-{{ iso_file | to_uuid }}
+  name: iso-auto-{{ (iso_file + template.name) | to_uuid }}
   generation: 5
   namespace: {{ target_namespace }}
 {% if owner_uid is defined and owner_uid is not none %}
