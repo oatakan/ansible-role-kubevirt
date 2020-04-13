@@ -33,7 +33,7 @@ spec:
 {% if template.ports is defined and template.ports | length > 0 %}
 {% for port in template.ports %}
 {% if port.port is defined and (port.port|int != 0) %}
-    - name: {{ port.name | default('svc-' + port.port) }}
+    - name: {{ port.name | default('svc-' + port.port|string) }}
       port: {{ port.port|int }}
       protocol: {{ port.protocol | default('TCP') }}
       targetPort: {{ port.port|int }}
