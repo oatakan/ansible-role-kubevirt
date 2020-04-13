@@ -11,7 +11,7 @@
         dest: "{{ temp_directory }}/ks_iso/unattend.xml"
 
     - name: create iso
-      command: mkisofs -V ADDISO -r -iso-level 4 -o {{ playbook_dir }}/{{ temp_directory }}/windows_{{ template.template }}_autounattend_autogen.iso .
+      command: mkisofs -V ADDISO -r -iso-level 4 -o {{ playbook_dir }}/{{ temp_directory }}/{{ iso_file }} .
       args:
         chdir: "{{ playbook_dir }}/{{ temp_directory }}/ks_iso"
 
@@ -22,6 +22,5 @@
         path: "{{ temp_directory }}/{{ item }}"
         state: absent
       loop:
-        - windows_{{ template.template }}_autounattend_autogen.iso
-        - virtio_win.iso
+        - "{{ iso_file }}"
         - ks_iso/

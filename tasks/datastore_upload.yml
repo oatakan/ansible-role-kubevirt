@@ -24,10 +24,10 @@
 - name: upload iso file to data volume
   kubevirt_cdi_upload:
     pvc_namespace: '{{ target_namespace }}'
-    pvc_name: iso-auto-{{ iso_file | to_uuid }}
+    pvc_name: iso-auto-{{ (iso_file + template.name) | to_uuid }}
     upload_host: '{{ kubevirt_upload_proxy_url }}'
     upload_host_validate_certs: false
-    path: "{{ playbook_dir }}/{{ temp_directory }}/windows_{{ template.template }}_autounattend_autogen.iso"
+    path: "{{ playbook_dir }}/{{ temp_directory }}/{{ iso_file }}"
     verify_ssl: no
     api_key: "{{ api_key }}"
   register: disk_iso_file
