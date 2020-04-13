@@ -1,7 +1,7 @@
 ---
 temp_directory: tmp{{ awx_job_id | default('') }}
 
-iso_file: "windows_{{ template.template }}_autounattend{{ awx_job_id | default('') }}.iso"
+iso_file: "windows_{{ template.name }}_autounattend{{ awx_job_id | default('') }}.iso"
 
 #vm_os_type: "{{ 'windows' if (template.sysprep is defined) else 'linux' }}"
 
