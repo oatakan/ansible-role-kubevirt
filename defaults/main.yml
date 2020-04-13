@@ -1,0 +1,16 @@
+---
+
+role_action: provision
+
+target_namespace: openshift-cnv
+pvc_storage_class: hostpath-provisioner
+kubevirt_upload_proxy_url: https://localhost:443
+
+kubevirt_use_configmap: no
+
+ansible_port: 22
+instance_wait_retry_limit: 600
+instance_wait_connection_timeout: 300
+
+vm_failed: no
+

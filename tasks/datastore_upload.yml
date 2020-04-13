@@ -1,0 +1,36 @@
+---
+
+- name: create data volume for the iso file
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'iso-dv.yml') | from_yaml }}"
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+
+- name: wait for pvc to be created
+  k8s_info:
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: iso-auto-{{ iso_file | to_uuid }}
+    namespace: '{{ target_namespace }}'
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  register: pvc_iso_auto_info
+  until: (pvc_iso_auto_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] | default('')) == 'Running'
+  retries: 100
+  delay: 5
+  ignore_errors: yes
+
+- name: upload iso file to data volume
+  kubevirt_cdi_upload:
+    pvc_namespace: '{{ target_namespace }}'
+    pvc_name: iso-auto-{{ iso_file | to_uuid }}
+    upload_host: '{{ kubevirt_upload_proxy_url }}'
+    upload_host_validate_certs: false
+    path: "{{ playbook_dir }}/{{ temp_directory }}/windows_{{ template.template }}_autounattend_autogen.iso"
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  register: disk_iso_file
+  until: disk_iso_file is success
+  delay: 3
+  retries: 5

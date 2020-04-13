@@ -1,0 +1,93 @@
+---
+
+- block:
+
+    - include_tasks: provision_vm.yml
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when: nodes is defined
+
+    - include_tasks: wait_disk.yml
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when: nodes is defined
+
+    - name: start the vm(s)
+      kubevirt_vm:
+        state: running
+        name: '{{ template.name }}'
+        namespace: '{{ target_namespace }}'
+        wait: no
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when: nodes is defined
+
+    - include_tasks: wait_for_remote.yml
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when:
+        - nodes is defined
+
+    - name: eject cdroms
+      k8s:
+        state: present
+        merge_type: merge
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+        definition:
+          apiVersion: kubevirt.io/v1alpha3
+          kind: VirtualMachine
+          metadata:
+            name: '{{ template.name }}'
+            namespace: '{{ target_namespace }}'
+          spec:
+            template:
+              spec:
+                domain:
+                  devices:
+                    disks:
+                      - bootOrder: 1
+                        disk:
+                          bus: virtio
+                        name: disk0
+                volumes:
+                  - dataVolume:
+                      name: '{{ template.name }}-disk0'
+                    name: disk0
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when:
+        - nodes is defined
+        - vm_os_type == 'windows'
+        - template.sysprep is undefined or (template.sysprep is defined and template.sysprep|bool)
+
+  rescue:
+
+    - name: set vm_failed variable
+      set_fact:
+        vm_failed: yes
+
+  always:
+
+    - include_tasks: datastore_iso_remove.yml
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when: nodes is defined
+
+    - name: remove temporary directory
+      file:
+        path: "{{ temp_directory }}"
+        state: absent
+
+- name: fail if needed
+  fail:
+    msg: "fail to provision vm - {{ template.name }}"
+  when: vm_failed|bool

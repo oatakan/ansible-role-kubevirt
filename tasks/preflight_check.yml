@@ -1,0 +1,20 @@
+---
+
+- name: check if template dv exists
+  k8s_info:
+    api_version: cdi.kubevirt.io/v1alpha1
+    kind: DataVolume
+    name: '{{ template.template }}-template-disk0'
+    namespace: '{{ target_namespace }}'
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  register: dv_template_disk_info
+
+- name: fail with message
+  fail:
+    msg: "data volume ({{ template.template }}-template-disk0) could not be found, make sure it exists"
+  when: ( dv_template_disk_info.resources | default([]) ) | length == 0
+
+- name: set os type
+  set_fact:
+    nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) }}'

@@ -1,0 +1,123 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  annotations:
+    name.os.template.kubevirt.io/win2k12r2: {{ template.name }}
+  name: {{ template.name }}
+  generation: 2
+  namespace: '{{ target_namespace }}'
+  labels:
+    app: {{ template.name }}
+    app_name: {{ template.app_name }}
+    role: {{ template.role }}
+    flavor.template.kubevirt.io/medium: 'true'
+    os.template.kubevirt.io/win2k12r2: 'true'
+    vm.kubevirt.io/template: win2k12r2-server-medium-v0.7.0
+    vm.kubevirt.io/template-namespace: openshift
+    vm.kubevirt.io/template.revision: '1'
+    vm.kubevirt.io/template.version: v0.8.2
+    workload.template.kubevirt.io/server: 'true'
+    os.family: windows
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: {{ template.name }}-disk0
+      spec:
+        source:
+          pvc:
+            namespace: {{ target_namespace }}
+            name: {{ dv_template_disk_info.resources[0].metadata.name }}
+        pvc:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: {{ dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage }}
+          storageClassName: {{ pvc_storage_class }}
+          volumeMode: Filesystem
+      status: {}
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: {{ template.name }}
+        kubevirt.io/size: medium
+        vm.kubevirt.io/name: {{ template.name }}
+        app: {{ template.name }}
+        app_name: {{ template.app_name }}
+        role: {{ template.role }}
+    spec:
+      domain:
+        clock:
+          timer:
+            hpet:
+              present: false
+            hyperv: {}
+            pit:
+              tickPolicy: delay
+            rtc:
+              tickPolicy: catchup
+          utc: {}
+        cpu:
+          cores: {{ template.cpu }}
+          sockets: 1
+          threads: 2
+        devices:
+          disks:
+            - bootOrder: 1
+              disk:
+                bus: virtio
+              name: disk0
+{% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
+            - bootOrder: 2
+              cdrom:
+                bus: sata
+              name: configmap-volume
+{% else %}
+            - bootOrder: 2
+              cdrom:
+                bus: sata
+              name: cd-drive-1
+{% endif %}
+          interfaces:
+            - bootOrder: 3
+              masquerade: {}
+              model: virtio
+              name: nic0
+        features:
+          acpi: {}
+          apic: {}
+          hyperv:
+            relaxed: {}
+            spinlocks:
+              spinlocks: 8191
+            vapic: {}
+{% if template.efi is defined and template.efi|bool %}
+        firmware:
+          bootloader:
+            efi: {}
+{% endif %}
+        machine:
+          type: ''
+        resources:
+          requests:
+            memory: {{ template.memory }}Mi
+      evictionStrategy: LiveMigrate
+      hostname: {{ template.name }}
+      networks:
+        - name: nic0
+          pod: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - dataVolume:
+            name: {{ template.name }}-disk0
+          name: disk0
+{% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
+        - name: configmap-volume
+          configMap:
+            name: '{{ template.name }}-configmap'
+{% else %}
+        - name: cd-drive-1
+          persistentVolumeClaim:
+            claimName: iso-auto-{{ iso_file | to_uuid }}
+{% endif %}

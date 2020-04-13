@@ -1,0 +1,97 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  annotations:
+    kubevirt.io/latest-observed-api-version: v1alpha3
+    kubevirt.io/storage-observed-api-version: v1alpha3
+    name.os.template.kubevirt.io/rhel8: {{ template.name }}
+  name: {{ template.name }}
+  generation: 2
+  namespace: '{{ target_namespace }}'
+  labels:
+    app: {{ template.name }}
+    app_name: {{ template.app_name }}
+    role: {{ template.role }}
+    flavor.template.kubevirt.io/medium: 'true'
+    vm.kubevirt.io/template: rhel8-server-medium-v0.7.0
+    vm.kubevirt.io/template-namespace: openshift
+    vm.kubevirt.io/template.revision: '1'
+    vm.kubevirt.io/template.version: v0.8.2
+    workload.template.kubevirt.io/server: 'true'
+    os.family: redhat
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: {{ template.name }}-disk0
+      spec:
+        source:
+          pvc:
+            namespace: {{ target_namespace }}
+            name: {{ dv_template_disk_info.resources[0].metadata.name }}
+        pvc:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: {{ dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage }}
+          storageClassName: {{ pvc_storage_class }}
+          volumeMode: Filesystem
+      status: {}
+  running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: {{ template.name }}
+        kubevirt.io/size: medium
+        vm.kubevirt.io/name: {{ template.name }}
+        app: {{ template.name }}
+        app_name: {{ template.app_name }}
+        role: {{ template.role }}
+    spec:
+      domain:
+        cpu:
+          cores: {{ template.cpu }}
+          sockets: 1
+          threads: 2
+        devices:
+          disks:
+            - bootOrder: 1
+              disk:
+                bus: virtio
+              name: disk0
+            - name: cloudinitdisk
+              bootOrder: 3
+              disk:
+                bus: virtio
+          interfaces:
+            - bootOrder: 2
+              masquerade: {}
+              model: virtio
+              name: nic0
+{% if template.efi is defined and template.efi|bool %}
+        firmware:
+          bootloader:
+            efi: {}
+{% endif %}
+        machine:
+          type: ''
+        resources:
+          requests:
+            memory: {{ template.memory }}Mi
+      evictionStrategy: LiveMigrate
+      hostname: {{ template.name }}
+      networks:
+        - name: nic0
+          pod: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - dataVolume:
+            name: {{ template.name }}-disk0
+          name: disk0
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+{% set user_data_content %}
+{% include 'templates/cloud_init.yml.j2' %}
+{% endset %}
+            userData: |
+{{ user_data_content | indent(14, True) }}

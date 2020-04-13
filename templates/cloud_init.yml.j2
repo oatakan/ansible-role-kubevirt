@@ -1,0 +1,22 @@
+name: default
+hostname: "{{ template.name }}"
+{% if template.networks[0].ip is defined and template.networks[0].netmask is defined and template.networks[0].gateway is defined %}
+nic_boot_protocol: static
+nic_ip_address: "{{ template.networks[0].ip }}"
+nic_netmask: "{{ template.networks[0].netmask }}"
+nic_gateway: "{{ template.networks[0].gateway }}"
+{% else %}
+nic_boot_protocol: dhcp
+{% endif %}
+nic_name: eth0
+nic_on_boot: true
+host_name: "{{ template.name }}.{{ template.domain | default('') }}"
+{% if template.dns_servers is defined %}
+dns_servers: "{{ template.dns_servers|join(' ') }}"
+{% endif %}
+{% if template.user_name is defined %}
+user_name: "{{ template.user_name }}"
+{% endif %}
+{% if template.root_password is defined %}
+root_password: "{{ template.root_password }}"
+{% endif %}

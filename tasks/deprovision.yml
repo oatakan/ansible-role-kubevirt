@@ -1,0 +1,21 @@
+---
+
+- name: remove vm
+  k8s:
+    state: absent
+    api_version: kubevirt.io/v1alpha3
+    kind: VirtualMachine
+    name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
+    namespace: '{{ target_namespace }}'
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  loop: "{{ ansible_play_hosts }}"
+  loop_control:
+    loop_var: vm
+  when:
+    - nodes is defined
+    - hostvars[vm].uid is defined
+    - hostvars[vm].labels['vm.kubevirt.io/name'] is defined
+    - (nodes | json_query(query)) | length > 0
+  vars:
+    query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"

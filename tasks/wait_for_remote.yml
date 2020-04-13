@@ -1,0 +1,64 @@
+---
+
+- block:
+    - name: Get vmi info
+      k8s_info:
+        api_version: kubevirt.io/v1alpha3
+        kind: VirtualMachineInstance
+        name: '{{ template.name }}'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: template_vmi
+      until: (template_vmi.resources[0].status.nodeName | default('')) | length > 0
+      retries: 15
+      delay: 3
+  rescue:
+    - name: stop the vm
+      kubevirt_vm:
+        state: stopped
+        name: '{{ template.name }}'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+
+    - name: start the vm
+      kubevirt_vm:
+        state: running
+        name: '{{ template.name }}'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+
+    - name: Get vmi info
+      k8s_info:
+        api_version: kubevirt.io/v1alpha3
+        kind: VirtualMachineInstance
+        name: '{{ template.name }}'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: template_vmi
+      until: (template_vmi.resources[0].status.nodeName | default('')) | length > 0
+      retries: 15
+      delay: 3
+      ignore_errors: yes
+
+- name: provision service
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'svc.yml') | from_yaml }}"
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  vars:
+    owner_uid: "{{ template_vmi.resources[0].metadata.ownerReferences[0].uid | default(None) }}"
+  register: template_svc
+
+- name: wait for remote port to be available
+  wait_for:
+    port: "{{ template_svc.result.spec.ports[0].nodePort }}"
+    host: "{{ template_vmi.resources[0].status.nodeName }}"
+    delay: 10
+    timeout: "{{ instance_wait_connection_timeout }}"
+  connection: local
+  when: template_vmi is success
