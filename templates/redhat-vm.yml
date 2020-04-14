@@ -2,6 +2,9 @@ apiVersion: kubevirt.io/v1alpha3
 kind: VirtualMachine
 metadata:
   annotations:
+{% if template.networks is defined and template.networks|length > 0 %}
+    k8s.v1.cni.cncf.io/networks: "{{ template.networks | map(attribute='name') | join(', ') }}"
+{% endif %}
     kubevirt.io/latest-observed-api-version: v1alpha3
     kubevirt.io/storage-observed-api-version: v1alpha3
     name.os.template.kubevirt.io/rhel8: {{ template.name }}
@@ -64,10 +67,18 @@ spec:
               disk:
                 bus: virtio
           interfaces:
+{% if template.networks is defined and template.networks|length > 0 %}
+{% for network in template.networks %}
+            - bridge: {}
+              model: virtio
+              name: nic{{ loop.index|string }}
+{% endfor %}
+{% else %}
             - bootOrder: 2
               masquerade: {}
               model: virtio
               name: nic0
+{% endif %}
 {% if template.efi is defined and template.efi|bool %}
         firmware:
           bootloader:
@@ -81,8 +92,16 @@ spec:
       evictionStrategy: LiveMigrate
       hostname: {{ template.name }}
       networks:
+{% if template.networks is defined and template.networks|length > 0 %}
+{% for network in template.networks %}
+        - multus:
+            networkName: {{ network.name }}
+          name: nic{{ loop.index|string }}
+{% endfor %}
+{% else %}
         - name: nic0
           pod: {}
+{% endif %}
       terminationGracePeriodSeconds: 0
       volumes:
         - dataVolume:
