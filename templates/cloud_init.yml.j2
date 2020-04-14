@@ -1,23 +1,38 @@
 name: default
 hostname: "{{ template.name }}"
 {% if template.networks[0].ip is defined and template.networks[0].netmask is defined and template.networks[0].gateway is defined %}
-nic_boot_protocol: static
-nic_ip_address: "{{ template.networks[0].ip }}"
-nic_netmask: "{{ template.networks[0].netmask }}"
-nic_gateway: "{{ template.networks[0].gateway }}"
-nic_name: "{{ template.networks[0].nic_name | default('eth0') }}"
-{% else %}
-nic_boot_protocol: dhcp
+network:
+    version: 2
+    renderer: NetworkManager
+    ethernets:
+{% for network in template.networks %}
+        {{ network.name }}:
+            dhcp4: true
+            addresses:
+                - {{ network.ip }}/{{ (network.ip + '/' + network.netmask) | ipaddr('prefix') }}
+            gateway4: network.gateway
+{% if network.dns_servers %}
+            nameservers:
+                addresses: {{ network.dns_servers }}
 {% endif %}
-nic_on_boot: true
-host_name: "{{ template.name }}.{{ template.domain | default('') }}"
+{% endfor %}
+{% endif %}
+fqdn: "{{ template.name }}.{{ template.domain | default('') }}"
 {% if template.dns_servers is defined %}
-dns_servers: "{{ template.dns_servers|join(' ') }}"
+resolv_conf:
+    nameservers: "{{ template.dns_servers }}"
+{% if template.domain is defined %}
+    domain: "{{ template.domain }}"
+{% endif %}
 {% endif %}
 {% if template.user_name is defined %}
-user_name: "{{ template.user_name }}"
+users:
+    - name: "{{ template.user_name }}"
+      sudo: true
 {% endif %}
 {% if template.root_password is defined %}
-root_password: "{{ template.root_password }}"
+password: "{{ template.root_password }}"
+chpasswd:
+    expire: false
 {% endif %}
-ssh_pwauth: True
+ssh_pwauth: yes
