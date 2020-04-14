@@ -11,7 +11,7 @@ network:
             addresses:
                 - {{ network.ip }}/{{ (network.ip + '/' + network.netmask) | ipaddr('prefix') }}
             gateway4: network.gateway
-{% if network.dns_servers %}
+{% if network.dns_servers is defined %}
             nameservers:
                 addresses: {{ network.dns_servers }}
 {% endif %}
