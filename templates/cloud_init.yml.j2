@@ -5,10 +5,10 @@ nic_boot_protocol: static
 nic_ip_address: "{{ template.networks[0].ip }}"
 nic_netmask: "{{ template.networks[0].netmask }}"
 nic_gateway: "{{ template.networks[0].gateway }}"
+nic_name: "{{ template.networks[0].nic_name | default('eth0') }}"
 {% else %}
 nic_boot_protocol: dhcp
 {% endif %}
-nic_name: eth0
 nic_on_boot: true
 host_name: "{{ template.name }}.{{ template.domain | default('') }}"
 {% if template.dns_servers is defined %}
