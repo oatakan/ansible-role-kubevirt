@@ -71,7 +71,7 @@ spec:
 {% for network in template.networks %}
             - bridge: {}
               model: virtio
-              name: nic{{ loop.index|string }}
+              name: nic{{ (loop.index-1)|string }}
 {% endfor %}
 {% else %}
             - bootOrder: 2
@@ -96,7 +96,7 @@ spec:
 {% for network in template.networks %}
         - multus:
             networkName: {{ network.name }}
-          name: nic{{ loop.index|string }}
+          name: nic{{ (loop.index-1)|string }}
 {% endfor %}
 {% else %}
         - name: nic0
