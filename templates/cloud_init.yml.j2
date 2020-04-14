@@ -6,18 +6,18 @@ network:
     renderer: NetworkManager
     ethernets:
 {% for network in template.networks %}
-        {{ network.name }}:
+        {{ network.nic_name }}:
             dhcp4: true
             addresses:
                 - {{ network.ip }}/{{ (network.ip + '/' + network.netmask) | ipaddr('prefix') }}
-            gateway4: network.gateway
+            gateway4: {{ network.gateway }}
 {% if network.dns_servers is defined %}
             nameservers:
                 addresses: {{ network.dns_servers }}
 {% endif %}
 {% endfor %}
 {% endif %}
-fqdn: "{{ template.name }}.{{ template.domain | default('') }}"
+fqdn: {{ template.name }}.{{ template.domain | default('') }}
 {% if template.dns_servers is defined %}
 resolv_conf:
     nameservers: "{{ template.dns_servers }}"
