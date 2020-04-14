@@ -14,3 +14,6 @@ instance_wait_connection_timeout: 300
 
 vm_failed: no
 
+default_ports:
+  windows: 5986
+  redhat: 22

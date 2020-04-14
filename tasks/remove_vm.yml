@@ -3,12 +3,9 @@
 - name: remove vm
   k8s:
     state: absent
-    definition: "{{ lookup('template', item) | from_yaml }}"
+    definition: "{{ lookup('template', '{{ vm_os_type }}-vm.yml') | from_yaml }}"
     verify_ssl: no
     api_key: "{{ api_key }}"
-  loop:
-    - '{{ vm_os_type }}-vm.yml'
-#    - svc.yml
 
 - name: wait for vm deletion to complete
   k8s_info:

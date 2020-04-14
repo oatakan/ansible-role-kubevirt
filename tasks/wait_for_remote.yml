@@ -53,11 +53,13 @@
   vars:
     owner_uid: "{{ template_vmi.resources[0].metadata.ownerReferences[0].uid | default(None) }}"
   register: template_svc
+  when:
+    - template.networks is undefined or template.networks | length == 0
 
 - name: wait for remote port to be available
   wait_for:
-    port: "{{ template_svc.result.spec.ports[0].nodePort }}"
-    host: "{{ template_vmi.resources[0].status.nodeName }}"
+    port: "{{ remote_host }}"
+    host: "{{ remote_port }}"
     delay: 10
     timeout: "{{ instance_wait_connection_timeout }}"
   connection: local
