@@ -58,8 +58,8 @@
 
 - name: wait for remote port to be available
   wait_for:
-    port: "{{ remote_host }}"
-    host: "{{ remote_port }}"
+    port: "{{ remote_port }}"
+    host: "{{ remote_host }}"
     delay: 10
     timeout: "{{ instance_wait_connection_timeout }}"
   connection: local
