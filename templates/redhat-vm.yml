@@ -111,7 +111,12 @@ spec:
         - name: cloudinitdisk
           cloudInitNoCloud:
 {% set user_data_content %}
-{% include 'templates/cloud_init.yml.j2' %}
+{% include 'templates/cloud_init-user.yml.j2' %}
 {% endset %}
-            userData: |
+{% set network_data_content %}
+{% include 'templates/cloud_init-network.yml.j2' %}
+{% endset %}
+            networkData: >
+{{ network_data_content | indent(14, True) }}
+            userData: >
 {{ user_data_content | indent(14, True) }}
