@@ -1,26 +1,20 @@
-hostname: "{{ template.name }}"
-
-fqdn: {{ template.name }}.{{ template.domain | default('') }}
-{% if template.dns_servers is defined %}
-
-resolv_conf:
-  nameservers: "{{ template.dns_servers }}"
-{% if template.domain is defined %}
-  domain: "{{ template.domain }}"
+#cloud-config
+{% if template.root_password is defined %}
+chpasswd:
+  list: |
+    root:{{ template.root_password }}
+  expire: False
 {% endif %}
+{% if template.dns_servers is defined %}
+resolv_conf:
+  nameservers: {{ template.dns_servers }}
 {% endif %}
 {% if template.user_name is defined %}
-
 users:
-  - name: "{{ template.user_name }}"
+  - name: {{ template.user_name }}
     sudo: true
 {% endif %}
-{% if template.root_password is defined %}
-
-password: "{{ template.root_password }}"
-
-chpasswd:
-  expire: false
-{% endif %}
-
 ssh_pwauth: True
+hostname: {{ template.name }}
+fqdn: {{ template.name }}.{{ template.domain | default('') }}
+disable_root: false
