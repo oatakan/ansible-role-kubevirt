@@ -1,19 +1,50 @@
 ---
 
-- name: check if template dv exists
+- name: fail if no template and disk specified
+  fail:
+    msg: "{{ at least one disk must be specified when no template is used }}"
+  when:
+    - template.template is undefined
+    - template.disks[0].size | default(False)
+
+- name: fail if both template and pvc_iso_template is specified
+  fail:
+    msg: "template and pvc_iso_template are mutually exclusive, only define one of them"
+  when:
+    - template.template is defined
+    - template.pvc_iso_template is defined
+
+- block:
+    - name: check if template dv exists
+      k8s_info:
+        api_version: cdi.kubevirt.io/v1alpha1
+        kind: DataVolume
+        name: '{{ template.template }}-template-disk0'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: dv_template_disk_info
+
+    - name: fail with message
+      fail:
+        msg: "data volume ({{ template.template }}-template-disk0) could not be found, make sure it exists"
+      when: ( dv_template_disk_info.resources | default([]) ) | length == 0
+  when: template.template is defined
+
+- name: check if template iso pvc exists
   k8s_info:
-    api_version: cdi.kubevirt.io/v1alpha1
-    kind: DataVolume
-    name: '{{ template.template }}-template-disk0'
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: '{{ template_iso_pvc }}'
     namespace: '{{ target_namespace }}'
     verify_ssl: no
     api_key: "{{ api_key }}"
-  register: dv_template_disk_info
+  register: template_iso_pvc_info
+  when: pvc_iso_template is defined
 
-- name: fail with message
-  fail:
-    msg: "data volume ({{ template.template }}-template-disk0) could not be found, make sure it exists"
-  when: ( dv_template_disk_info.resources | default([]) ) | length == 0
+- name: set pvc iso template name
+  set_fact:
+    boot_iso_pvc_name: '{{ pvc_iso_template.resources[0].metadata.name | default(None) }}'
 
 - name: set os type
   set_fact:

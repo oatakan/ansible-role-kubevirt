@@ -27,10 +27,12 @@ spec:
     - metadata:
         name: {{ template.name }}-disk0
       spec:
+{% if template.template is defined %}
         source:
           pvc:
             namespace: {{ target_namespace }}
             name: {{ dv_template_disk_info.resources[0].metadata.name }}
+{% endif %}
         pvc:
           accessModes:
             - ReadWriteMany
@@ -62,6 +64,12 @@ spec:
               disk:
                 bus: virtio
               name: disk0
+{% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
+            - bootOrder: 2
+              cdrom:
+                bus: sata
+              name: boot-iso
+{% endif %}
             - name: cloudinitdisk
               bootOrder: 3
               cdrom:
@@ -108,6 +116,11 @@ spec:
         - dataVolume:
             name: {{ template.name }}-disk0
           name: disk0
+{% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
+        - name: boot-iso
+          persistentVolumeClaim:
+            claimName: {{ boot_iso_pvc_name }}
+{% endif %}
         - name: cloudinitdisk
           cloudInitNoCloud:
 {% set user_data_content %}

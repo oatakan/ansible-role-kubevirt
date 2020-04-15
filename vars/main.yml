@@ -9,3 +9,5 @@ vm_os_type: "{{ nodes_os_type[template.name] | default('redhat') }}"
 # if using named network we'll assume direct connection and won't use service
 remote_host: "{{ template.networks[0].ip if (template.networks[0].ip is defined) else template_vmi.resources[0].status.nodeName }}"
 remote_port: "{{ default_ports[vm_os_type] if (template.networks[0].ip is defined) else template_svc.result.spec.ports[0].nodePort }}"
+
+template_iso_pvc_name: "iso-auto-{{ (template.name + '_' + (pvc_iso_template | default(''))) | to_uuid }}"

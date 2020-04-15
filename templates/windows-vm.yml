@@ -26,10 +26,12 @@ spec:
     - metadata:
         name: {{ template.name }}-disk0
       spec:
+{% if template.template is defined %}
         source:
           pvc:
             namespace: {{ target_namespace }}
             name: {{ dv_template_disk_info.resources[0].metadata.name }}
+{% endif %}
         pvc:
           accessModes:
             - ReadWriteMany
@@ -71,6 +73,7 @@ spec:
               disk:
                 bus: virtio
               name: disk0
+{% if template.template is defined %}
 {% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
             - bootOrder: 2
               cdrom:
@@ -81,6 +84,14 @@ spec:
               cdrom:
                 bus: sata
               name: cd-drive-1
+{% endif %}
+{% else %}
+{% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
+            - bootOrder: 2
+              cdrom:
+                bus: sata
+              name: boot-iso
+{% endif %}
 {% endif %}
           interfaces:
 {% if template.networks is defined and template.networks|length > 0 %}
@@ -131,6 +142,7 @@ spec:
         - dataVolume:
             name: {{ template.name }}-disk0
           name: disk0
+{% if template.template is defined %}
 {% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
         - name: configmap-volume
           configMap:
@@ -139,4 +151,11 @@ spec:
         - name: cd-drive-1
           persistentVolumeClaim:
             claimName: {{ iso_pvc_name }}
+{% endif %}
+{% else %}
+{% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
+        - name: boot-iso
+          persistentVolumeClaim:
+            claimName: {{ boot_iso_pvc_name }}
+{% endif %}
 {% endif %}
