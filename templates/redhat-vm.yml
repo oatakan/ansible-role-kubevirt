@@ -116,7 +116,7 @@ spec:
 {% set network_data_content %}
 {% include 'templates/cloud_init-network.yml.j2' %}
 {% endset %}
-            networkData: >
+            networkData: |
 {{ network_data_content | indent(14, True) }}
-            userData: >
+            userData: |
 {{ user_data_content | indent(14, True) }}
