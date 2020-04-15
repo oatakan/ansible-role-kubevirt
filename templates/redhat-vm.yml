@@ -64,8 +64,9 @@ spec:
               name: disk0
             - name: cloudinitdisk
               bootOrder: 3
-              disk:
-                bus: virtio
+              cdrom:
+                bus: sata
+                readonly: true
           interfaces:
 {% if template.networks is defined and template.networks|length > 0 %}
 {% for network in template.networks %}
