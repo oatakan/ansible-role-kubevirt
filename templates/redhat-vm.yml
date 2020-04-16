@@ -27,11 +27,13 @@ spec:
     - metadata:
         name: {{ template.name }}-disk0
       spec:
-{% if template.template is defined %}
         source:
+{% if template.template is defined %}
           pvc:
             namespace: {{ target_namespace }}
             name: {{ dv_template_disk_info.resources[0].metadata.name }}
+{% else %}
+          blank: {}
 {% endif %}
         pvc:
           accessModes:
