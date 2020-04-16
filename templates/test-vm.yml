@@ -22,3 +22,24 @@ metadata:
     vm.kubevirt.io/template.version: v0.8.2
     workload.template.kubevirt.io/server: 'true'
     os.family: redhat
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: {{ template.name }}-disk0
+      spec:
+{% if template.template is defined %}
+        source:
+          pvc:
+            namespace: {{ target_namespace }}
+            name: {{ dv_template_disk_info.resources[0].metadata.name }}
+{% endif %}
+        pvc:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage)) | replace('GiB', 'Gi') }}
+          storageClassName: {{ pvc_storage_class }}
+          volumeMode: Filesystem
+      status: {}
+  running: false
