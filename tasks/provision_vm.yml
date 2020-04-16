@@ -2,7 +2,7 @@
 
 - include_tasks: preflight_check.yml
 
-- name: provision a new vm ({{ vm_os_type }})
+- name: provision a new vm
   k8s:
     state: present
     definition: "{{ lookup('template', vm_os_type + '-vm.yml') | from_yaml }}"
