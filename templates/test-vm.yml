@@ -126,3 +126,6 @@ spec:
 {% set user_data_content %}
 {% include 'templates/cloud_init-user.yml.j2' %}
 {% endset %}
+{% set network_data_content %}
+{% include 'templates/cloud_init-network.yml.j2' %}
+{% endset %}
