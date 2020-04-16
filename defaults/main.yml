@@ -11,6 +11,7 @@ kubevirt_use_configmap: no
 ansible_port: 22
 instance_wait_retry_limit: 600
 instance_wait_connection_timeout: 300
+instance_wait_for_ip_retry_limit: 50
 
 vm_failed: no
 
