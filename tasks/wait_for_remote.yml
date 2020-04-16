@@ -64,3 +64,17 @@
     timeout: "{{ instance_wait_connection_timeout }}"
   connection: local
   when: template_vmi is success
+
+- name: wait for remote ip to be available on vmi
+  k8s_info:
+    api_version: kubevirt.io/v1alpha3
+    kind: VirtualMachineInstance
+    name: '{{ template.name }}'
+    namespace: '{{ target_namespace }}'
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  register: template_vmi
+  until: (template_vmi.resources[0].status.interfaces[0].ipAddress | default('')) | length > 0
+  retries: 30
+  delay: 3
+  ignore_errors: yes
