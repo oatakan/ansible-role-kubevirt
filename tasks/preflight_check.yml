@@ -35,12 +35,12 @@
   k8s_info:
     api_version: v1
     kind: PersistentVolumeClaim
-    name: '{{ template_iso_pvc }}'
+    name: '{{ template_iso_pvc_name }}'
     namespace: '{{ target_namespace }}'
     verify_ssl: no
     api_key: "{{ api_key }}"
   register: template_iso_pvc_info
-  when: pvc_iso_template is defined
+  when: template.pvc_iso_template is defined
 
 - name: set pvc iso template name
   set_fact:
