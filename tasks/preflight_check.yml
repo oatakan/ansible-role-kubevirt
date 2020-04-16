@@ -5,7 +5,7 @@
     msg: "{{ at least one disk must be specified when no template is used }}"
   when:
     - template.template is undefined
-    - template.disks[0].size | default(False)
+    - template.disks[0].size is undefined | default(False)
 
 - name: fail if both template and pvc_iso_template is specified
   fail:

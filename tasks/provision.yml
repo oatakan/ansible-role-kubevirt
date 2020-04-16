@@ -89,5 +89,5 @@
 
 - name: fail if needed
   fail:
-    msg: "fail to provision vm - {{ template.name }}"
+    msg: "fail to provision vm(s)"
   when: vm_failed|bool
