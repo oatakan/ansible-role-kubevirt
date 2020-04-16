@@ -69,12 +69,13 @@ spec:
               cdrom:
                 bus: sata
               name: boot-iso
-{% endif %}
+{% else %}
             - name: cloudinitdisk
               bootOrder: 3
               cdrom:
                 bus: sata
                 readonly: true
+{% endif %}
           interfaces:
 {% if template.networks is defined and template.networks|length > 0 %}
 {% for network in template.networks %}
@@ -120,7 +121,7 @@ spec:
         - name: boot-iso
           persistentVolumeClaim:
             claimName: {{ boot_iso_pvc_name }}
-{% endif %}
+{% else %}
         - name: cloudinitdisk
           cloudInitNoCloud:
 {% set user_data_content %}
@@ -133,3 +134,4 @@ spec:
 {{ network_data_content | indent(14, True) }}
             userData: |
 {{ user_data_content | indent(14, True) }}
+{% endif %}

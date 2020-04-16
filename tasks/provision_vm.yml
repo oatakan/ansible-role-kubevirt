@@ -2,16 +2,6 @@
 
 - include_tasks: preflight_check.yml
 
-- name: debug network file
-  debug:
-    msg: "{{ lookup('template', 'cloud_init-network.yml.j2') | from_yaml }}"
-
-- debug:
-    msg: "{{ lookup('template', 'test-vm.yml') | from_yaml }}"
-
-- debug:
-    msg: "{{ lookup('template', vm_os_type + '-vm.yml') | from_yaml }}"
-
 - name: provision a new vm ({{ vm_os_type }})
   k8s:
     state: present
