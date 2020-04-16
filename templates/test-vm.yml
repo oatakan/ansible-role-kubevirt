@@ -123,3 +123,6 @@ spec:
 {% endif %}
         - name: cloudinitdisk
           cloudInitNoCloud:
+{% set user_data_content %}
+{% include 'templates/cloud_init-user.yml.j2' %}
+{% endset %}
