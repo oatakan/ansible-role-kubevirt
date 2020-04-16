@@ -2,6 +2,10 @@
 
 - include_tasks: preflight_check.yml
 
+- name: debug network file
+  debug:
+    msg: "{{ lookup('template', 'cloud_init-network.yml.j2') | from_yaml }}"
+
 - debug:
     msg: "{{ lookup('template', 'test-vm.yml') | from_yaml }}"
 
