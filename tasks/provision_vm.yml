@@ -3,7 +3,7 @@
 - include_tasks: preflight_check.yml
 
 - debug:
-    msg: "{{ lookup('template', 'redhat-vm.yml') | from_yaml }}"
+    msg: "{{ lookup('template', 'test-vm.yml') | from_yaml }}"
 
 - debug:
     msg: "{{ lookup('template', vm_os_type + '-vm.yml') | from_yaml }}"
