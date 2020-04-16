@@ -43,3 +43,83 @@ spec:
           volumeMode: Filesystem
       status: {}
   running: false
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: {{ template.name }}
+        kubevirt.io/size: medium
+        vm.kubevirt.io/name: {{ template.name }}
+        app: {{ template.name }}
+        app_name: {{ template.app_name }}
+        role: {{ template.role }}
+    spec:
+      domain:
+        cpu:
+          cores: {{ template.cpu }}
+          sockets: 1
+          threads: 2
+        devices:
+          disks:
+            - bootOrder: 1
+              disk:
+                bus: virtio
+              name: disk0
+{% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
+            - bootOrder: 2
+              cdrom:
+                bus: sata
+              name: boot-iso
+{% endif %}
+            - name: cloudinitdisk
+              bootOrder: 3
+              cdrom:
+                bus: sata
+                readonly: true
+          interfaces:
+{% if template.networks is defined and template.networks|length > 0 %}
+{% for network in template.networks %}
+            - bridge: {}
+              model: virtio
+              name: nic{{ (loop.index-1)|string }}
+{% endfor %}
+{% else %}
+            - bootOrder: 2
+              masquerade: {}
+              model: virtio
+              name: nic0
+{% endif %}
+{% if template.efi is defined and template.efi|bool %}
+        firmware:
+          bootloader:
+            efi: {}
+{% endif %}
+        machine:
+          type: ''
+        resources:
+          requests:
+            memory: {{ template.memory }}Mi
+      evictionStrategy: LiveMigrate
+      hostname: {{ template.name }}
+      networks:
+{% if template.networks is defined and template.networks|length > 0 %}
+{% for network in template.networks %}
+        - multus:
+            networkName: {{ network.name }}
+          name: nic{{ (loop.index-1)|string }}
+{% endfor %}
+{% else %}
+        - name: nic0
+          pod: {}
+{% endif %}
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - dataVolume:
+            name: {{ template.name }}-disk0
+          name: disk0
+{% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
+        - name: boot-iso
+          persistentVolumeClaim:
+            claimName: {{ boot_iso_pvc_name }}
+{% endif %}
+        - name: cloudinitdisk
+          cloudInitNoCloud:
