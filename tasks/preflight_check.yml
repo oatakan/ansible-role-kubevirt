@@ -44,7 +44,7 @@
 
 - name: set pvc iso template name
   set_fact:
-    boot_iso_pvc_name: '{{ pvc_iso_template.resources[0].metadata.name | default(None) }}'
+    boot_iso_pvc_name: '{{ template_iso_pvc_info.resources[0].metadata.name | default(None) }}'
 
 - name: set os type
   set_fact:
