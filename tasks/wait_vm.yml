@@ -11,7 +11,7 @@
   register: target_vm_info
   until:
     - (target_vm_info.resources | default([])) | length > 0
-    - not (target_vm_info.resources[0].spec.running | default(True))
+    - not (target_vm_info.resources[0].spec.running | default(True) | bool)
   delay: 2
   retries: 60
   ignore_errors: yes
