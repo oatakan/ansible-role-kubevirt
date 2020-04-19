@@ -3,7 +3,7 @@
 - name: wait for vm to be in off status
   k8s_info:
     api_version: kubevirt.io/v1alpha3
-    kind: VirtualMachineInstance
+    kind: VirtualMachine
     name: '{{ template.name }}'
     namespace: '{{ target_namespace }}'
     verify_ssl: no
