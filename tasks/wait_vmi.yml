@@ -1,0 +1,15 @@
+---
+
+- name: wait for vmi to be created
+  k8s_info:
+    api_version: kubevirt.io/v1alpha3
+    kind: VirtualMachineInstance
+    name: '{{ template.name }}'
+    namespace: '{{ target_namespace }}'
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  register: target_vmi_info
+  until: (target_vmi_info.resources | default([])) | length > 0
+  delay: 2
+  retries: 60
+  ignore_errors: yes
