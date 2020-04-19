@@ -14,7 +14,7 @@
         loop_var: template
       when: nodes is defined
 
-    - include_tasks: wait_vmi.yml
+    - include_tasks: wait_vm.yml
       loop: "{{ nodes }}"
       loop_control:
         loop_var: template

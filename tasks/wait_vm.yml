@@ -1,6 +1,6 @@
 ---
 
-- name: wait for vmi to be created
+- name: wait for vm to be in off status
   k8s_info:
     api_version: kubevirt.io/v1alpha3
     kind: VirtualMachineInstance
@@ -8,8 +8,10 @@
     namespace: '{{ target_namespace }}'
     verify_ssl: no
     api_key: "{{ api_key }}"
-  register: target_vmi_info
-  until: (target_vmi_info.resources | default([])) | length > 0
+  register: target_vm_info
+  until:
+    - (target_vm_info.resources | default([])) | length > 0
+    - not (target_vm_info.resources[0].spec.running | default(True))
   delay: 2
   retries: 60
   ignore_errors: yes
