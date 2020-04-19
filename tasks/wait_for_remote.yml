@@ -11,7 +11,7 @@
         api_key: "{{ api_key }}"
       register: template_vmi
       until: (template_vmi.resources[0].status.nodeName | default('')) | length > 0
-      retries: 30
+      retries: 60
       delay: 3
   rescue:
     - name: stop the vm
