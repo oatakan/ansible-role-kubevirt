@@ -12,6 +12,7 @@ ansible_port: 22
 instance_wait_retry_limit: 600
 instance_wait_connection_timeout: 300
 instance_wait_for_ip_retry_limit: 50
+resize_job_timeout: 3600
 
 vm_failed: no
 
