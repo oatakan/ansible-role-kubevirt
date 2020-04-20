@@ -132,8 +132,10 @@ spec:
 {% set network_data_content %}
 {% include 'templates/cloud_init-network.yml.j2' %}
 {% endset %}
+{% if template.networks is defined and template.networks|length > 0 %}
             networkData: |
 {{ network_data_content | indent(14, True) }}
+{% endif %}
             userData: |
 {{ user_data_content | indent(14, True) }}
 {% endif %}
