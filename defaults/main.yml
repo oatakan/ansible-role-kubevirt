@@ -7,6 +7,7 @@ pvc_storage_class: hostpath-provisioner
 kubevirt_upload_proxy_url: https://localhost:443
 
 kubevirt_use_configmap: no
+kubevirt_deprov_wait_vm: yes
 
 ansible_port: 22
 instance_wait_retry_limit: 600

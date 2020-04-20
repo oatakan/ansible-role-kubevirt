@@ -1,28 +1,31 @@
 ---
 
-- name: expand disk job
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'resize-job.yml') | from_yaml }}"
-    verify_ssl: no
-    api_key: "{{ api_key }}"
+- block:
+    - name: expand disk job
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'resize-job.yml') | from_yaml }}"
+        verify_ssl: no
+        api_key: "{{ api_key }}"
 
-- name: wait for job to finish
-  k8s_info:
-    api_version: batch/v1
-    kind: Job
-    name: '{{ template.name }}-expand'
-    namespace: '{{ target_namespace }}'
-    verify_ssl: no
-    api_key: "{{ api_key }}"
-  register: job_info
-  until: (job_info.resources[0].status.succeeded | default(0) | int) == 1
-  retries: 60
-  delay: 5
+    - name: wait for job to finish
+      k8s_info:
+        api_version: batch/v1
+        kind: Job
+        name: '{{ template.name }}-expand'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: job_info
+      until: (job_info.resources[0].status.succeeded | default(0) | int) == 1
+      retries: 60
+      delay: 5
 
-- name: remove job
-  k8s:
-    state: absent
-    definition: "{{ lookup('template', 'resize-job.yml') | from_yaml }}"
-    verify_ssl: no
-    api_key: "{{ api_key }}"
+  always:
+
+    - name: remove job
+      k8s:
+        state: absent
+        definition: "{{ lookup('template', 'resize-job.yml') | from_yaml }}"
+        verify_ssl: no
+        api_key: "{{ api_key }}"

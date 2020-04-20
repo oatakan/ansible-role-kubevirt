@@ -19,3 +19,27 @@
     - (nodes | json_query(query)) | length > 0
   vars:
     query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
+
+- name: wait for vm deletion to complete
+  k8s_info:
+    api_version: kubevirt.io/v1alpha3
+    kind: VirtualMachine
+    name: '{{ template.name }}'
+    namespace: '{{ target_namespace }}'
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  register: vm_info
+  until: (vm_info.resources | default([])) | length == 0
+  retries: "{{ instance_wait_retry_limit }}"
+  delay: 3
+  loop: "{{ ansible_play_hosts }}"
+  loop_control:
+    loop_var: template
+  when:
+    - kubevirt_deprov_wait_vm | bool
+    - nodes is defined
+    - hostvars[template].uid is defined
+    - hostvars[template].labels['vm.kubevirt.io/name'] is defined
+    - (nodes | json_query(query)) | length > 0
+  vars:
+    query: "@[?name==`{{ hostvars[template].labels['vm.kubevirt.io/name'] }}`]"
