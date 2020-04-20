@@ -21,7 +21,7 @@
       when:
         - nodes is defined
         - template.template is defined
-        - (template.disks | length | default(0)) > 0
+        - (template.disks | default([]) | length) > 0
         - (template.disks[0].size | replace('GiB', '') | int) > (dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage | replace('Gi', '') | int)
 
     - include_tasks: wait_vm.yml
