@@ -87,7 +87,7 @@ spec:
 {% endfor %}
 {% else %}
             - bootOrder: 2
-              masquerade: {}
+              bridge: {}
               model: virtio
               name: nic0
 {% endif %}
@@ -126,9 +126,6 @@ spec:
 {% else %}
         - name: cloudinitdisk
           cloudInitNoCloud:
-{% set user_data_content %}
-{% include 'templates/cloud_init-user.yml.j2' %}
-{% endset %}
 {% if template.networks is defined and template.networks|length > 0 %}
 {% set network_data_content %}
 {% include 'templates/cloud_init-network.yml.j2' %}
@@ -136,6 +133,9 @@ spec:
             networkData: |
 {{ network_data_content | indent(14, True) }}
 {% endif %}
+{% set user_data_content %}
+{% include 'templates/cloud_init-user.yml.j2' %}
+{% endset %}
             userData: |
 {{ user_data_content | indent(14, True) }}
 {% endif %}
