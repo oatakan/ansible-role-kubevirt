@@ -18,7 +18,7 @@
         api_key: "{{ api_key }}"
       register: job_info
       until: (job_info.resources[0].status.succeeded | default(0) | int) == 1
-      retries: 60
+      retries: 120
       delay: 5
 
   always:
