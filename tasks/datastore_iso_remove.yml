@@ -9,6 +9,36 @@
         api_key: "{{ api_key }}"
       when: not kubevirt_use_configmap|bool
 
+
+    - block:
+        - name: wait for pvc to be deleted
+          k8s_info:
+            api_version: v1
+            kind: PersistentVolumeClaim
+            name: '{{ iso_pvc_name }}'
+            namespace: '{{ target_namespace }}'
+            verify_ssl: no
+            api_key: "{{ api_key }}"
+          register: pvc_iso_info
+          until: pvc_iso_info.resources | length == 0
+          retries: 10
+          delay: 5
+      rescue:
+        - name: remove finalizer to allow deletion
+          k8s:
+            state: present
+            merge_type: merge
+            verify_ssl: no
+            api_key: "{{ api_key }}"
+            definition:
+              apiVersion: cdi.kubevirt.io/v1alpha1
+              kind: DataVolume
+              metadata:
+                name: '{{ iso_pvc_name }}'
+                namespace: '{{ target_namespace }}'
+                finalizers: null
+      when: not kubevirt_use_configmap|bool
+
     - name: remove configmap
       k8s:
         state: absent
