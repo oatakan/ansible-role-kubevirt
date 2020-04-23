@@ -22,8 +22,7 @@ spec:
       enableServiceLinks: true
       terminationGracePeriodSeconds: 30
       securityContext:
-        seLinuxOptions:
-          level: 's0:c25,c0'
+        seLinuxOptions: {}
         runAsUser: 0
       containers:
         - resources: {}
