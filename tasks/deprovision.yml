@@ -43,3 +43,17 @@
     - (nodes | json_query(query)) | length > 0
   vars:
     query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
+
+- include_tasks: remove_pvc.yml
+  loop: "{{ ansible_play_hosts }}"
+  loop_control:
+    loop_var: vm
+  when:
+    - kubevirt_deprov_wait_vm | bool
+    - nodes is defined
+    - hostvars[vm].uid is defined
+    - hostvars[vm].labels['vm.kubevirt.io/name'] is defined
+    - (nodes | json_query(query)) | length > 0
+  vars:
+    query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
+    target_pvc_name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}-disk0"

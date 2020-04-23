@@ -1,0 +1,30 @@
+---
+
+- block:
+    - name: wait for pvc to be deleted
+      k8s_info:
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: '{{ target_pvc_name }}'
+        namespace: '{{ target_namespace }}'
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: target_pvc_iso_info
+      until: target_pvc_iso_info.resources | length == 0
+      retries: 10
+      delay: 5
+  rescue:
+    - name: remove finalizer to allow deletion
+      k8s:
+        state: present
+        merge_type: merge
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+        definition:
+          apiVersion: cdi.kubevirt.io/v1alpha1
+          kind: DataVolume
+          metadata:
+            name: '{{ target_pvc_name }}'
+            namespace: '{{ target_namespace }}'
+            finalizers: null
+  when: target_pvc_name is defined
