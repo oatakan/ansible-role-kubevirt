@@ -30,8 +30,8 @@
             verify_ssl: no
             api_key: "{{ api_key }}"
             definition:
-              apiVersion: cdi.kubevirt.io/v1alpha1
-              kind: DataVolume
+              apiVersion: v1
+              kind: PersistentVolumeClaim
               metadata:
                 name: '{{ iso_pvc_name }}'
                 namespace: '{{ target_namespace }}'
