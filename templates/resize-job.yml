@@ -7,6 +7,15 @@ metadata:
   namespace: '{{ target_namespace }}'
   labels:
     app: {{ template.name }}-expand
+{% if owner_uid is defined and owner_uid is not none %}
+  ownerReferences:
+    - apiVersion: kubevirt.io/v1alpha3
+      kind: VirtualMachine
+      name: {{ template.name }}
+      uid: {{ owner_uid }}
+      controller: true
+      blockOwnerDeletion: true
+{% endif %}
 spec:
   activeDeadlineSeconds: {{ resize_job_timeout }}
   template:

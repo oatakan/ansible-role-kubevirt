@@ -10,6 +10,10 @@
     api_key: "{{ api_key }}"
   register: new_vm
 
+- name: set vm info
+  set_fact:
+    new_vms: '{{ new_vms | default({}) | combine({new_vm.result.metadata.name: new_vm.result}) }}'
+
 - block:
     - include_tasks: make_iso.yml
       when: not kubevirt_use_configmap|bool
