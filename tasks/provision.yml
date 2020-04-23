@@ -18,6 +18,8 @@
       loop: "{{ nodes }}"
       loop_control:
         loop_var: template
+      vars:
+        owner_uid: "{{ new_vms[template.name].metadata.uid | default(None) }}"
       when:
         - nodes is defined
         - template.template is defined
