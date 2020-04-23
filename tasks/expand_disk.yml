@@ -7,6 +7,8 @@
         definition: "{{ lookup('template', 'resize-job.yml') | from_yaml }}"
         verify_ssl: no
         api_key: "{{ api_key }}"
+      vars:
+        owner_uid: "{{ new_vms[template.name].metadata.uid | default(None) }}"
 
     - name: wait for job to finish
       k8s_info:
