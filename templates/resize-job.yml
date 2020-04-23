@@ -22,7 +22,8 @@ spec:
       enableServiceLinks: true
       terminationGracePeriodSeconds: 30
       securityContext:
-        seLinuxOptions: {}
+        seLinuxOptions:
+          type: virt_launcher.process
         runAsUser: 0
       containers:
         - resources: {}
@@ -41,8 +42,11 @@ spec:
               value: /var/run/cdi/clone/source
           securityContext:
             capabilities:
-              drop:
-                - MKNOD
+              add:
+                - NET_ADMIN
+                - SYS_NICE
+            privileged: false
+            runAsUser: 0
           ports:
             - name: metrics
               containerPort: 8443
