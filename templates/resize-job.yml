@@ -21,10 +21,6 @@ spec:
       schedulerName: default-scheduler
       enableServiceLinks: true
       terminationGracePeriodSeconds: 30
-      securityContext:
-        seLinuxOptions:
-          type: virt_launcher.process
-        runAsUser: 0
       containers:
         - resources: {}
           terminationMessagePath: /dev/termination-log
@@ -40,13 +36,6 @@ spec:
               value: filesystem
             - name: MOUNT_POINT
               value: /var/run/cdi/clone/source
-          securityContext:
-            capabilities:
-              add:
-                - NET_ADMIN
-                - SYS_NICE
-            privileged: false
-            runAsUser: 0
           ports:
             - name: metrics
               containerPort: 8443
