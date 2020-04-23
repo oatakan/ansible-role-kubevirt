@@ -11,6 +11,7 @@
         api_key: "{{ api_key }}"
       register: target_pvc_iso_info
       until: target_pvc_iso_info.resources | length == 0
+      no_log: yes
       retries: 10
       delay: 5
   rescue:

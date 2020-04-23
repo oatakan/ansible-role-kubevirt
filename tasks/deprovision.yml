@@ -1,24 +1,5 @@
 ---
 
-- name: stop vm(s)
-  kubevirt_vm:
-    state: running
-    name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
-    namespace: '{{ target_namespace }}'
-    wait: yes
-    verify_ssl: no
-    api_key: "{{ api_key }}"
-  loop: "{{ ansible_play_hosts }}"
-  loop_control:
-    loop_var: vm
-  when:
-    - nodes is defined
-    - hostvars[vm].uid is defined
-    - hostvars[vm].labels['vm.kubevirt.io/name'] is defined
-    - (nodes | json_query(query)) | length > 0
-  vars:
-    query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
-
 - name: remove vm(s)
   k8s:
     state: absent
