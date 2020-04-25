@@ -2,6 +2,11 @@
 
 - block:
 
+    # for windows sysprep we need to upload iso file as configmap is not currently working
+    # see this PR: https://github.com/kubevirt/kubevirt/pull/3283
+    # we should be able to remove this step once validated in the next release
+    - include_tasks: check_upload_url.yml
+
     - include_tasks: provision_vm.yml
       loop: "{{ nodes }}"
       loop_control:
