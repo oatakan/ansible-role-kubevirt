@@ -8,6 +8,7 @@
         status_code:
           - 404
         validate_certs: no
+      no_log: true
 
   rescue:
     - name: get cdi route
