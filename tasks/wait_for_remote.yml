@@ -64,6 +64,7 @@
     timeout: "{{ instance_wait_connection_timeout }}"
   connection: local
   when: template_vmi is success
+  ignore_errors: yes
 
 - name: wait for remote ip to be available on vmi
   k8s_info:
