@@ -6,8 +6,6 @@
       uri:
         url: "{{ kubevirt_upload_proxy_url }}"
         status_code:
-          - 200
-          - 201
           - 404
         validate_certs: no
 
