@@ -20,7 +20,7 @@
         api_version: cdi.kubevirt.io/v1alpha1
         kind: DataVolume
         name: '{{ template.template }}-template-disk0'
-        namespace: '{{ target_namespace }}'
+        namespace: '{{ template_namespace }}'
         verify_ssl: no
         api_key: "{{ api_key }}"
       register: dv_template_disk_info
@@ -36,7 +36,7 @@
     api_version: v1
     kind: PersistentVolumeClaim
     name: '{{ template_iso_pvc_name }}'
-    namespace: '{{ target_namespace }}'
+    namespace: '{{ template_namespace }}'
     verify_ssl: no
     api_key: "{{ api_key }}"
   register: template_iso_pvc_info

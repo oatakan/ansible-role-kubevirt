@@ -29,7 +29,7 @@ spec:
         source:
 {% if template.template is defined %}
           pvc:
-            namespace: {{ target_namespace }}
+            namespace: {{ template_namespace }}
             name: {{ dv_template_disk_info.resources[0].metadata.name }}
 {% else %}
           blank: {}

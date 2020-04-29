@@ -31,6 +31,7 @@ Including an example of how to use your role (for instance, with variables passe
       become: no
       vars:
         target_namespace: openshift-cnv
+        template_namespace: openshift-cnv
         pvc_storage_class: hostpath-provisioner
         kubevirt_upload_proxy_url: https://localhost:443
         nodes:
