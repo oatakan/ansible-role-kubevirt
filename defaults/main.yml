@@ -3,6 +3,7 @@
 role_action: provision
 
 target_namespace: openshift-cnv
+template_namespace: openshift-cnv
 pvc_storage_class: hostpath-provisioner
 kubevirt_operator_namespace: openshift-cnv
 kubevirt_upload_proxy_name: cdi-uploadproxy
