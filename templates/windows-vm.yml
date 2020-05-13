@@ -69,6 +69,9 @@ spec:
           cores: {{ template.cpu }}
           sockets: 1
           threads: 2
+{% if template.cpu_model is defined and template.cpu_model == 'host-passthrough' %}
+          model: {{ template.cpu_model }}
+{% endif %}
         devices:
           disks:
             - bootOrder: 1
