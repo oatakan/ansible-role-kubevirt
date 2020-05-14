@@ -44,6 +44,10 @@
       delay: 3
       ignore_errors: yes
 
+- name: set vmi info
+  set_fact:
+    new_vmis: '{{ new_vmis | default({}) | combine({template_vmi.resources[0].metadata.name: template_vmi.resources[0]}) }}'
+
 - name: provision service
   k8s:
     state: present
