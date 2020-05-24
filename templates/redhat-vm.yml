@@ -67,7 +67,7 @@ spec:
           disks:
             - bootOrder: 1
               disk:
-                bus: virtio
+                bus: {{ template.boot_disk_bus | default('virtio') }}
               name: disk0
 {% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
             - bootOrder: 2
@@ -85,7 +85,7 @@ spec:
 {% if template.networks is defined and template.networks|length > 0 %}
 {% for network in template.networks %}
             - bridge: {}
-              model: virtio
+              model: {{ network.mode | default('virtio') }}
               name: nic{{ (loop.index-1)|string }}
 {% endfor %}
 {% else %}

@@ -76,7 +76,7 @@ spec:
           disks:
             - bootOrder: 1
               disk:
-                bus: virtio
+                bus: {{ template.boot_disk_bus | default('virtio') }}
               name: disk0
 {% if template.template is defined %}
 {% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
@@ -102,7 +102,7 @@ spec:
 {% if template.networks is defined and template.networks|length > 0 %}
 {% for network in template.networks %}
             - bridge: {}
-              model: virtio
+              model: {{ network.mode | default('virtio') }}
               name: nic{{ (loop.index-1)|string }}
 {% endfor %}
 {% else %}
