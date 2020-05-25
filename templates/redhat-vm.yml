@@ -85,7 +85,7 @@ spec:
 {% if template.networks is defined and template.networks|length > 0 %}
 {% for network in template.networks %}
             - bridge: {}
-              model: {{ network.mode | default('virtio') }}
+              model: {{ network.model | default('virtio') }}
               name: nic{{ (loop.index-1)|string }}
 {% endfor %}
 {% else %}
