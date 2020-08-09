@@ -19,7 +19,7 @@ metadata:
     vm.kubevirt.io/template: rhel8-server-medium-v0.7.0
     vm.kubevirt.io/template-namespace: openshift
     vm.kubevirt.io/template.revision: '1'
-    vm.kubevirt.io/template.version: v0.8.2
+    vm.kubevirt.io/template.version: v{{ kubevirt_template_version }}
     workload.template.kubevirt.io/server: 'true'
     os.family: redhat
 spec:
