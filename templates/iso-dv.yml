@@ -16,8 +16,9 @@ metadata:
 spec:
   pvc:
     accessModes:
-      - ReadOnlyMany
-    dataSource: null
+      - ReadOnlyOnce
+#      - ReadOnlyMany
+#    dataSource: null
     resources:
       requests:
         storage: 20Mi
