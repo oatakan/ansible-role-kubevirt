@@ -16,7 +16,7 @@ metadata:
 spec:
   pvc:
     accessModes:
-      - ReadOnlyOnce
+      - ReadWriteOnce
 #      - ReadOnlyMany
 #    dataSource: null
     resources:
