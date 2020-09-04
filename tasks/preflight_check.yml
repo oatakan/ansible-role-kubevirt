@@ -49,3 +49,13 @@
 - name: set os type
   set_fact:
     nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) }}'
+
+- name: enable clone role binding
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'clone-role-binding.yml') | from_yaml }}"
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  when:
+    - kubevirt_clone_cluster_role_enable
+    - template_namespace != target_namespace

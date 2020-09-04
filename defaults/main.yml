@@ -9,6 +9,9 @@ kubevirt_operator_namespace: openshift-cnv
 kubevirt_upload_proxy_name: cdi-uploadproxy
 kubevirt_upload_proxy_url: https://localhost:443
 
+kubevirt_clone_cluster_role_name: datavolume-cloner
+kubevirt_clone_cluster_role_enable: true
+
 kubevirt_template_version: 0.11.2
 
 kubevirt_use_configmap: no
