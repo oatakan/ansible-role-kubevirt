@@ -60,6 +60,22 @@
   when:
     - template.networks is undefined or template.networks | length == 0
 
+- name: provision route
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'route.yml') | from_yaml }}"
+    verify_ssl: no
+    api_key: "{{ api_key }}"
+  vars:
+    owner_uid: "{{ template_vmi.resources[0].metadata.ownerReferences[0].uid | default(None) }}"
+  loop: "{{ template.ports }}"
+  loop_control:
+    loop_var: port
+  when:
+    - template.networks is undefined or template.networks | length == 0
+    - template.ports | default([]) | length == 0
+    - port.route | default(false) | bool
+
 - name: wait for remote port to be available
   wait_for:
     port: "{{ remote_port }}"
