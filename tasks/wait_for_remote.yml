@@ -73,7 +73,7 @@
     loop_var: port
   when:
     - template.networks is undefined or template.networks | length == 0
-    - template.ports | default([]) | length == 0
+    - template.ports | default([]) | length > 0
     - port.route | default(false) | bool
 
 - name: wait for remote port to be available
