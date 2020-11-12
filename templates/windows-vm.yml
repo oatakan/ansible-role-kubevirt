@@ -15,7 +15,7 @@ metadata:
     role: {{ template.role }}
     flavor.template.kubevirt.io/medium: 'true'
     os.template.kubevirt.io/win2k12r2: 'true'
-    vm.kubevirt.io/template: win2k12r2-server-medium-v0.7.0
+    vm.kubevirt.io/template: win2k12r2-server-medium-v{{ kubevirt_template_version }}
     vm.kubevirt.io/template-namespace: openshift
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v{{ kubevirt_template_version }}
