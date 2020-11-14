@@ -11,3 +11,14 @@ remote_host: "{{ template.networks[0].ip if (template.networks[0].ip is defined)
 remote_port: "{{ default_ports[vm_os_type] if (template.networks[0].ip is defined) else template_svc.result.spec.ports[0].nodePort }}"
 
 template_iso_pvc_name: "iso-{{ awx_job_id | default('') }}-{{ (template.name + '_' + (template.pvc_iso_template | default(''))) | to_uuid }}"
+
+os_version_reg_pattern: '.*-v((\d+).(\d+).(\d+))$'
+
+rhel_os_template_name: rhel8-server-medium
+rhel_os_template_jmesquery: "[?starts_with(name, '{{ rhel_os_template_name }}')].name"
+rhel_os_template_version: "{{ (os_templates.resources | map(attribute='metadata') | list | to_json | from_json | json_query(rhel_os_template_jmesquery))[0] | regex_replace(os_version_reg_pattern, '\\1') }}"
+
+win_os_template_name: windows-server-medium
+win_os_template_jmesquery: "[?starts_with(name, '{{ win_os_template_name }}')].name"
+win_os_template_version: "{{ (os_templates.resources | map(attribute='metadata') | list | to_json | from_json | json_query(win_os_template_jmesquery))[0] | regex_replace(os_version_reg_pattern, '\\1') }}"
+
