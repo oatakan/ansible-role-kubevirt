@@ -7,6 +7,15 @@
     # we should be able to remove this step once validated in the next release
     - include_tasks: check_upload_url.yml
 
+    - name: check list of os templates
+      k8s_info:
+        api_version: template.openshift.io/v1
+        kind: Template
+        namespace: "{{ os_template_namespace }}"
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: os_templates
+
     - include_tasks: provision_vm.yml
       loop: "{{ nodes }}"
       loop_control:
