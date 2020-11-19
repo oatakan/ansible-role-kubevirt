@@ -13,7 +13,7 @@ metadata:
     app: {{ template.name }}
     app_name: {{ template.app_name }}
     role: {{ template.role }}
-    flavor.template.kubevirt.io/medium: 'true'
+    #flavor.template.kubevirt.io/medium: 'true'
     os.template.kubevirt.io/win2k12r2: 'true'
     vm.kubevirt.io/template: {{ win_os_template_name }}-v{{ win_os_template_version }}
     vm.kubevirt.io/template-namespace: {{ os_template_namespace }}
