@@ -53,7 +53,7 @@ spec:
             - name: cdi-data-vol
               mountPath: /var/run/cdi/clone/source
           terminationMessagePolicy: File
-          image: registry.redhat.io/container-native-virtualization/virt-launcher:latest
+          image: registry.redhat.io/container-native-virtualization/virt-launcher:{{ kubevirt_virt_launcher_tag }}
       serviceAccount: default
       volumes:
         - name: cdi-data-vol
