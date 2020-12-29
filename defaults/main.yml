@@ -16,7 +16,7 @@ kubevirt_virt_launcher_tag: v2.5.2
 
 os_template_namespace: openshift
 
-kubevirt_use_configmap: no
+kubevirt_use_configmap: yes
 kubevirt_deprov_wait_vm: yes
 
 ansible_port: 22
