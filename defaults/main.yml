@@ -12,6 +12,8 @@ kubevirt_upload_proxy_url: https://localhost:443
 kubevirt_clone_cluster_role_name: datavolume-cloner
 kubevirt_clone_cluster_role_enable: true
 
+kubevirt_virt_launcher_tag: v2.5.2
+
 os_template_namespace: openshift
 
 kubevirt_use_configmap: no
