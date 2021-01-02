@@ -48,7 +48,7 @@
 
 - name: set os distro name
   set_fact:
-    distro_name: "{{ template_iso_pvc_info.resources[0].metadata.labels['os.distribution'] | default(None) }}"
+    distro_name: '{{ dv_template_disk_info.resources[0].metadata.labels["os.distribution"] | default(template_iso_pvc_info.resources[0].metadata.labels["os.distribution"]) | default(None) }}'
 
 - name: set os type
   set_fact:
