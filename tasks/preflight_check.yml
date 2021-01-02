@@ -46,6 +46,10 @@
   set_fact:
     boot_iso_pvc_name: '{{ template_iso_pvc_info.resources[0].metadata.name | default(None) }}'
 
+- name: set os distro name
+  set_fact:
+    distro_name: "{{ template_iso_pvc_info.resources[0].metadata.labels['os.distribution'] | default(None) }}"
+
 - name: set os type
   set_fact:
     nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) }}'

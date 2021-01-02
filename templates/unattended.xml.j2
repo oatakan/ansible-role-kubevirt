@@ -25,7 +25,7 @@
                 <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
                 <NetworkLocation>Home</NetworkLocation>
                 <ProtectYourPC>1</ProtectYourPC>
-{% if not '2008' in (windows_distro_name | default(template.template)) %}
+{% if not '2008' in (distro_name | default(template.template)) %}
                 <HideLocalAccountScreen>true</HideLocalAccountScreen>
                 <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
                 <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
@@ -54,7 +54,7 @@
                     <Order>2</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
-{% if not '2008' in (windows_distro_name | default(template.template)) %}
+{% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c winrm quickconfig -q</CommandLine>
                     <Description>winrm quickconfig -q</Description>
@@ -153,7 +153,7 @@
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
 {% if template.networks is defined and template.networks[0].ip is defined and template.networks[0].gateway is defined and template.networks[0].netmask is defined %}
-{% if not '2008' in (windows_distro_name | default(template.template)) %}
+{% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c powershell -Command "New-NetIPAddress –IPAddress {{ template.networks[0].ip }} -DefaultGateway {{ template.networks[0].gateway }} -PrefixLength {{ (template.networks[0].ip + '/' + template.networks[0].netmask) | ipaddr('prefix') }} -InterfaceIndex (Get-NetAdapter | Where-Object { ($_.Name -like '*Ethernet*') -and ($_.Status -like 'Up') })[0].InterfaceIndex"</CommandLine>
                     <Description>Set static ip</Description>
@@ -169,7 +169,7 @@
                 </SynchronousCommand>
 {% endif %}
 {% if template.networks[0].dns_servers is defined %}
-{% if not '2008' in (windows_distro_name | default(template.template)) %}
+{% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c powershell -Command "Set-DNSClientServerAddress –InterfaceIndex (Get-NetAdapter | Where-Object { ($_.Name -like '*Ethernet*') -and ($_.Status -like 'Up') })[0].InterfaceIndex –ServerAddresses {{ template.networks[0].dns_servers|join(',') }}"</CommandLine>
                     <Description>Set static ip</Description>
