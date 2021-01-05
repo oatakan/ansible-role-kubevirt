@@ -52,7 +52,7 @@
 
 - name: set os type
   set_fact:
-    nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) }}'
+    nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) | lower }}'
 
 - name: enable clone role binding
   k8s:
