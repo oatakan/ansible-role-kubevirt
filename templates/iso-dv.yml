@@ -13,6 +13,8 @@ metadata:
       controller: true
       blockOwnerDeletion: true
 {% endif %}
+  annotations:
+    cdi.kubevirt.io/storage.bind.immediate.requested: 'true'
 spec:
   pvc:
     accessModes:
@@ -23,5 +25,6 @@ spec:
       requests:
         storage: 20Mi
     storageClassName: {{ pvc_storage_class }}
+    volumeMode: Filesystem
   source:
     upload: {}
