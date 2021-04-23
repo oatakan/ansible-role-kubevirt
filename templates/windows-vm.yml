@@ -16,7 +16,7 @@ metadata:
     os.template.kubevirt.io/win2k12r2: 'true'
 {% if template.template is defined %}
     vm.kubevirt.io/template: {{ template.template }}
-    vm.kubevirt.io/template-namespace: {{ os_template_namespace }}
+    vm.kubevirt.io/template-namespace: {{ template_namespace }}
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v{{ win_os_template_version }}
 {% endif %}
