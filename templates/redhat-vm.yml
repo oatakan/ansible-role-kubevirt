@@ -15,11 +15,12 @@ metadata:
     app: {{ template.name }}
     app_name: {{ template.app_name }}
     role: {{ template.role }}
-    #flavor.template.kubevirt.io/medium: 'true'
-    vm.kubevirt.io/template: {{ rhel_os_template_name }}-v{{ rhel_os_template_version }}
+{% if template.template is defined %}
+    vm.kubevirt.io/template: {{ template.template }}
     vm.kubevirt.io/template-namespace: {{ os_template_namespace }}
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v{{ rhel_os_template_version }}
+{% endif %}
     workload.template.kubevirt.io/server: 'true'
     os.family: redhat
 spec:
