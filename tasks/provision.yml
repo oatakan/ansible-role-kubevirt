@@ -22,11 +22,11 @@
         loop_var: template
       when: nodes is defined
 
-#    - include_tasks: wait_disk.yml
-#      loop: "{{ nodes }}"
-#      loop_control:
-#        loop_var: template
-#      when: nodes is defined
+    - include_tasks: wait_disk.yml
+      loop: "{{ nodes }}"
+      loop_control:
+        loop_var: template
+      when: nodes is defined
 
     - include_tasks: expand_disk.yml
       loop: "{{ nodes }}"

@@ -27,6 +27,8 @@ spec:
   dataVolumeTemplates:
     - metadata:
         name: {{ template.name }}-disk0
+        annotations:
+          cdi.kubevirt.io/storage.bind.immediate.requested: 'true'
       spec:
         source:
 {% if template.template is defined %}
