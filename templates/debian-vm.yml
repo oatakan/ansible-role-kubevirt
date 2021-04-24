@@ -100,6 +100,9 @@ spec:
         firmware:
           bootloader:
             efi: {}
+        features:
+          smm:
+            enabled: true
 {% endif %}
         machine:
           type: ''
