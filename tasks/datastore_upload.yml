@@ -16,7 +16,7 @@
     verify_ssl: no
     api_key: "{{ api_key }}"
   register: dv_iso_auto_info
-  until: (dv_iso_auto_info.resources[0].status.phase | default('')) == 'UploadReady'
+  until: (dv_iso_auto_info.resources[0].status.phase | default('')) == 'UploadReady' or (dv_iso_auto_info.resources[0].status.phase | default('')) == 'Succeeded'
   retries: 100
   delay: 5
   ignore_errors: yes
