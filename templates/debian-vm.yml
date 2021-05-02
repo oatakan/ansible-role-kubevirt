@@ -96,10 +96,14 @@ spec:
               model: virtio
               name: nic0
 {% endif %}
-{% if template.efi is defined and template.efi|bool %}
+{% if (template.efi is defined and template.efi|bool) or bootloader_efi is defined %}
         firmware:
           bootloader:
+{% if bootloader_efi is defined %}
+            efi: {{ bootloader_efi }}
+{% else %}
             efi: {}
+{% endif %}
         features:
           smm:
             enabled: true

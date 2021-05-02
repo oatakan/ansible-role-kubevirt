@@ -29,6 +29,24 @@
       fail:
         msg: "data volume ({{ template.template }}-template-disk0) could not be found, make sure it exists"
       when: ( dv_template_disk_info.resources | default([]) ) | length == 0
+
+    - name: get template info
+      k8s_info:
+        api_version: template.openshift.io/v1
+        kind: template
+        name: "{{ template_name }}"
+        namespace: "{{ namespace }}"
+        verify_ssl: no
+        api_key: "{{ api_key }}"
+      register: template_info
+
+    - name: set efi bootloader
+      set_fact:
+        bootloader_efi: '{{ (template_info.resources[0].objects | json_query(query))[0].spec.template.spec.domain.firmware.bootloader.efi | default(None) }}'
+      vars:
+        query: "@[?kind=='VirtualMachine']"
+      when: ( template_info.resources | default([]) ) | length > 0
+
   when: template.template is defined
 
 - name: check if template iso pvc exists

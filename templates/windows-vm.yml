@@ -129,6 +129,17 @@ spec:
           bootloader:
             efi: {}
 {% endif %}
+{% if (template.efi is defined and template.efi|bool) or bootloader_efi is defined %}
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+{% if bootloader_efi is defined %}
+            efi: {{ bootloader_efi }}
+{% else %}
+            efi: {}
+{% endif %}
+{% endif %}
         machine:
           type: ''
         resources:
