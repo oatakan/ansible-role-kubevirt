@@ -12,7 +12,13 @@ kubevirt_upload_proxy_url: https://localhost:443
 kubevirt_clone_cluster_role_name: datavolume-cloner
 kubevirt_clone_cluster_role_enable: true
 
-kubevirt_virt_launcher_tag: v2.5.2
+kubevirt_virt_launcher_tags:
+  cnv: v2.5.2
+  kubevirt: v0.40.0
+
+kubevirt_virt_launcher_images:
+  cnv: registry.redhat.io/container-native-virtualization/virt-launcher:{{ kubevirt_virt_launcher_tags['cnv'] }}
+  kubevirt: quay.io/kubevirt/virt-launcher:{{ kubevirt_virt_launcher_tags['kubevirt'] }}
 
 os_template_namespace: openshift
 
