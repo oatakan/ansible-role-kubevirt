@@ -34,8 +34,8 @@
       k8s_info:
         api_version: template.openshift.io/v1
         kind: template
-        name: "{{ template_name }}"
-        namespace: "{{ namespace }}"
+        name: '{{ template.template }}'
+        namespace: '{{ template_namespace }}'
         verify_ssl: no
         api_key: "{{ api_key }}"
       register: template_info
