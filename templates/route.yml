@@ -1,7 +1,7 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ template.name }}
+  name: {{ template.name }}-{{ port.name | default(port.port|string) }}
   namespace: {{ target_namespace }}
 {% if owner_uid is defined and owner_uid is not none %}
   ownerReferences:
