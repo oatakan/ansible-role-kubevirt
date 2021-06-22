@@ -7,7 +7,7 @@
         kind: PersistentVolumeClaim
         name: '{{ target_pvc_name }}'
         namespace: '{{ target_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: target_pvc_iso_info
       until: target_pvc_iso_info.resources | length == 0
@@ -19,7 +19,7 @@
       k8s:
         state: present
         merge_type: merge
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
         definition:
           apiVersion: v1

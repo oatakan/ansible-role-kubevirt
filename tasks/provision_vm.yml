@@ -6,7 +6,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', vm_os_type + '-vm.yml') | from_yaml }}"
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   register: new_vm
 
@@ -29,7 +29,7 @@
 #- name: clone from template
 #  kubevirt_vm:
 #    state: present
-#    verify_ssl: no
+#    validate_certs: no
 #    api_key: "{{ api_key }}"
 #    name: "{{ template.name }}"
 #    namespace: "{{ template.namespace | default('default') }}"

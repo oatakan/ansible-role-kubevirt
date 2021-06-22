@@ -7,7 +7,7 @@
     kind: VirtualMachine
     name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
     namespace: '{{ target_namespace }}'
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   loop: "{{ ansible_play_hosts }}"
   loop_control:
@@ -26,7 +26,7 @@
     kind: VirtualMachine
     name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
     namespace: '{{ target_namespace }}'
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   register: vm_info
   until: (vm_info.resources | default([])) | length == 0

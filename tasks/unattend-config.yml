@@ -3,7 +3,7 @@
 - name: create unattend configmap
   k8s:
     state: present
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
     definition:
       apiVersion: v1

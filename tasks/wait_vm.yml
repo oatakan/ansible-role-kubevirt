@@ -6,7 +6,7 @@
     kind: VirtualMachine
     name: '{{ template.name }}'
     namespace: '{{ target_namespace }}'
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   register: target_vm_info
   until:

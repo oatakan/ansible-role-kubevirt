@@ -7,7 +7,7 @@
         kind: VirtualMachineInstance
         name: '{{ template.name }}'
         namespace: '{{ target_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: template_vmi
       until: (template_vmi.resources[0].status.nodeName | default('')) | length > 0
@@ -19,7 +19,7 @@
         state: stopped
         name: '{{ template.name }}'
         namespace: '{{ target_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
 
     - name: start the vm
@@ -27,7 +27,7 @@
         state: running
         name: '{{ template.name }}'
         namespace: '{{ target_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
 
     - name: Get vmi info
@@ -36,7 +36,7 @@
         kind: VirtualMachineInstance
         name: '{{ template.name }}'
         namespace: '{{ target_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: template_vmi
       until: (template_vmi.resources[0].status.nodeName | default('')) | length > 0
@@ -52,7 +52,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'svc.yml') | from_yaml }}"
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   vars:
     owner_uid: "{{ template_vmi.resources[0].metadata.ownerReferences[0].uid | default(None) }}"
@@ -64,7 +64,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'route.yml') | from_yaml }}"
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   vars:
     owner_uid: "{{ template_vmi.resources[0].metadata.ownerReferences[0].uid | default(None) }}"
@@ -92,7 +92,7 @@
     kind: VirtualMachineInstance
     name: '{{ template.name }}'
     namespace: '{{ target_namespace }}'
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   register: template_vmi
   until: (template_vmi.resources[0].status.interfaces[0]['ipAddress'] | default('')) | length > 0

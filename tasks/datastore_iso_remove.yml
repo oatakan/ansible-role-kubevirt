@@ -5,7 +5,7 @@
       k8s:
         state: absent
         definition: "{{ lookup('template', 'iso-dv.yml') | from_yaml }}"
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       when: not kubevirt_use_configmap|bool
 
@@ -21,7 +21,7 @@
         kind: ConfigMap
         name: '{{ template.name }}-configmap'
         namespace: '{{ target_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       when: kubevirt_use_configmap|bool
   when:

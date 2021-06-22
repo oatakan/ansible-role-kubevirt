@@ -17,7 +17,7 @@
         kind: Route
         name: '{{ kubevirt_upload_proxy_name }}'
         namespace: '{{ kubevirt_operator_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: cdi_upload_proxy_route
 

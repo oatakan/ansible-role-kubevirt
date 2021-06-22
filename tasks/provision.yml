@@ -12,7 +12,7 @@
         api_version: template.openshift.io/v1
         kind: Template
         namespace: "{{ os_template_namespace }}"
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: os_templates
 
@@ -52,7 +52,7 @@
         name: '{{ template.name }}'
         namespace: '{{ target_namespace }}'
         wait: no
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       loop: "{{ nodes }}"
       loop_control:
@@ -70,7 +70,7 @@
       k8s:
         state: present
         merge_type: merge
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
         definition:
           apiVersion: kubevirt.io/v1alpha3

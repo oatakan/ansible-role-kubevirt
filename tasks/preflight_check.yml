@@ -21,7 +21,7 @@
         kind: DataVolume
         name: '{{ template.template }}-template-disk0'
         namespace: '{{ template_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: dv_template_disk_info
 
@@ -36,7 +36,7 @@
         kind: template
         name: '{{ template.template }}'
         namespace: '{{ template_namespace }}'
-        verify_ssl: no
+        validate_certs: no
         api_key: "{{ api_key }}"
       register: template_info
 
@@ -55,7 +55,7 @@
     kind: PersistentVolumeClaim
     name: '{{ template_iso_pvc_name }}'
     namespace: '{{ template_namespace }}'
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   register: template_iso_pvc_info
   when: template.pvc_iso_template is defined
@@ -76,7 +76,7 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'clone-role-binding.yml') | from_yaml }}"
-    verify_ssl: no
+    validate_certs: no
     api_key: "{{ api_key }}"
   when:
     - kubevirt_clone_cluster_role_enable
