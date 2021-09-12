@@ -1,7 +1,7 @@
 ---
 
 - name: remove vm(s)
-  k8s:
+  community.kubernetes.k8s:
     state: absent
     api_version: kubevirt.io/v1alpha3
     kind: VirtualMachine

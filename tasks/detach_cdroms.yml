@@ -18,7 +18,7 @@
             name: '{{ template.name }}-disk0'
 
 #- name: eject cdroms
-#  k8s:
+#  community.kubernetes.k8s:
 #    state: present
 #    merge_type: merge
 #    validate_certs: no

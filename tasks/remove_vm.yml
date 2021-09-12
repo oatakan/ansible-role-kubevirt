@@ -1,7 +1,7 @@
 ---
 
 - name: remove vm
-  k8s:
+  community.kubernetes.k8s:
     state: absent
     definition: "{{ lookup('template', '{{ vm_os_type }}-vm.yml') | from_yaml }}"
     validate_certs: no

@@ -49,7 +49,7 @@
     new_vmis: '{{ new_vmis | default({}) | combine({template_vmi.resources[0].metadata.name: template_vmi.resources[0]}) }}'
 
 - name: provision service
-  k8s:
+  community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'svc.yml') | from_yaml }}"
     validate_certs: no
@@ -61,7 +61,7 @@
     - template.networks is undefined or template.networks | length == 0
 
 - name: provision route
-  k8s:
+  community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'route.yml') | from_yaml }}"
     validate_certs: no

@@ -1,7 +1,7 @@
 ---
 
 - name: expand disk job
-  k8s:
+  community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'resize-job.yml') | from_yaml }}"
     validate_certs: no
