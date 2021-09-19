@@ -3,7 +3,7 @@
 - include_tasks: preflight_check.yml
 
 - name: provision a new vm ({{ vm_os_type }})
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', vm_os_type + '-vm.yml') | from_yaml }}"
     validate_certs: no

@@ -1,7 +1,7 @@
 ---
 
 - name: create data volume for the iso file
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'iso-dv.yml') | from_yaml }}"
     validate_certs: no

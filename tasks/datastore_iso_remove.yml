@@ -2,7 +2,7 @@
 
 - block:
     - name: remove iso (dv)
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         state: absent
         definition: "{{ lookup('template', 'iso-dv.yml') | from_yaml }}"
         validate_certs: no
@@ -15,7 +15,7 @@
         target_pvc_name: '{{ iso_pvc_name }}'
 
     - name: remove configmap
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         state: absent
         api_version: v1
         kind: ConfigMap

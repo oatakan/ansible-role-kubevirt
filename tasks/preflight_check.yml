@@ -73,7 +73,7 @@
     nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) | lower }}'
 
 - name: enable clone role binding
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'clone-role-binding.yml') | from_yaml }}"
     validate_certs: no
