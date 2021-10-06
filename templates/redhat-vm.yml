@@ -1,4 +1,4 @@
-apiVersion: kubevirt.io/v1alpha3
+apiVersion: "{{ api_version_virtual_machine }}"
 kind: VirtualMachine
 metadata:
   annotations:

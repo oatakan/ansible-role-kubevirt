@@ -14,7 +14,7 @@
         labels:
           app: '{{ template.name }}'
         ownerReferences:
-          - apiVersion: kubevirt.io/v1alpha3
+          - apiVersion: "{{ api_version_virtual_machine }}"
             kind: VirtualMachine
             name: '{{ template.name }}'
             uid: '{{ owner_uid }}'

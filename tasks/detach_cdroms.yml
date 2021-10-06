@@ -24,7 +24,7 @@
 #    validate_certs: no
 #    api_key: "{{ api_key }}"
 #    definition:
-#      apiVersion: kubevirt.io/v1alpha3
+#      apiVersion: "{{ api_version_virtual_machine }}"
 #      kind: VirtualMachine
 #      metadata:
 #        name: '{{ template.name }}'

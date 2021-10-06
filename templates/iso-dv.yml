@@ -6,7 +6,7 @@ metadata:
   namespace: {{ target_namespace }}
 {% if owner_uid is defined and owner_uid is not none %}
   ownerReferences:
-    - apiVersion: kubevirt.io/v1alpha3
+    - apiVersion: "{{ api_version_virtual_machine }}"
       kind: VirtualMachine
       name: {{ template.name }}
       uid: {{ owner_uid }}

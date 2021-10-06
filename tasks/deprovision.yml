@@ -3,7 +3,7 @@
 - name: remove vm(s)
   kubernetes.core.k8s:
     state: absent
-    api_version: kubevirt.io/v1alpha3
+    api_version: "{{ api_version_virtual_machine }}"
     kind: VirtualMachine
     name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
     namespace: '{{ target_namespace }}'
@@ -22,7 +22,7 @@
 
 - name: wait for vm(s) deletion to complete
   k8s_info:
-    api_version: kubevirt.io/v1alpha3
+    api_version: "{{ api_version_virtual_machine }}"
     kind: VirtualMachine
     name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
     namespace: '{{ target_namespace }}'
