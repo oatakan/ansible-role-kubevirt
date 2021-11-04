@@ -9,7 +9,7 @@
 
 - name: wait for dv to be ready
   k8s_info:
-    api_version: cdi.kubevirt.io/v1alpha1
+    api_version: "{{ api_version_dv }}"
     kind: DataVolume
     name: '{{ iso_pvc_name }}'
     namespace: '{{ target_namespace }}'
