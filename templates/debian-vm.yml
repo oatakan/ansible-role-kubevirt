@@ -24,7 +24,9 @@ metadata:
     os.family: {{ vm_os_type }}
 spec:
   dataVolumeTemplates:
-    - metadata:
+    - apiVersion: {{ api_version_dv }}
+      kind: DataVolume
+      metadata:
         name: {{ template.name }}-disk0
         annotations:
           cdi.kubevirt.io/storage.bind.immediate.requested: 'true'
