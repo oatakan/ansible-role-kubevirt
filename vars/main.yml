@@ -24,4 +24,6 @@ win_os_template_name: windows2k19-server-medium
 win_os_template_jmesquery: "[?starts_with(name, '{{ win_os_template_name }}')].labels"
 win_os_template_version: "{{ (os_templates.resources | map(attribute='metadata') | list | to_json | from_json | json_query(win_os_template_jmesquery))[0]['template.kubevirt.io/version'] | regex_replace(os_version_reg_pattern, '\\1') }}"
 
+win_os_c_drive_partition: "{{ '4' if (template.efi is defined and template.efi|bool) else '2' }}"
+
 kubevirt_launcher_image: "{{ kubevirt_virt_launcher_images['cnv'] if ((kubevirt_operator_namespace | default('')) == 'openshift-cnv') else kubevirt_virt_launcher_images['kubevirt'] }}"

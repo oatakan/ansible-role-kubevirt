@@ -159,12 +159,21 @@
                     <Order>22</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
+{% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c powershell -Command "Resize-Partition -DriveLetter C -Size (Get-PartitionSupportedSize -DriveLetter C).Sizemax -ErrorAction SilentlyContinue"</CommandLine>
                     <Description>Extend OS disk</Description>
                     <Order>23</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
+{% else %}
+                <SynchronousCommand wcm:action="add">
+                    <CommandLine>cmd.exe /c powershell -Command "'select disk 0','select partition {{ win_os_c_drive_partition }}','extend' | diskpart | Out-Null"</CommandLine>
+                    <Description>Extend OS disk</Description>
+                    <Order>23</Order>
+                    <RequiresUserInput>true</RequiresUserInput>
+                </SynchronousCommand>
+{% endif %}
 {% if template.networks is defined and template.networks[0].ip is defined and template.networks[0].gateway is defined and template.networks[0].netmask is defined %}
 {% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
