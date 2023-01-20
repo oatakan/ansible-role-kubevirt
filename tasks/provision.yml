@@ -2,10 +2,10 @@
 
 - block:
 
-    # for windows sysprep we need to upload iso file as configmap is not currently working
-    # see this PR: https://github.com/kubevirt/kubevirt/pull/3283
-    # we should be able to remove this step once validated in the next release
+    # we use configmap by default for windows sysprep
+    # this step is only needed when using iso file upload
     - include_tasks: check_upload_url.yml
+      when: not kubevirt_use_configmap|bool
 
     - name: check list of os templates
       k8s_info:
@@ -28,17 +28,18 @@
         loop_var: template
       when: nodes is defined
 
-    - include_tasks: expand_disk.yml
-      loop: "{{ nodes }}"
-      loop_control:
-        loop_var: template
-      vars:
-        owner_uid: "{{ new_vms[template.name].metadata.uid | default(None) }}"
-      when:
-        - nodes is defined
-        - template.template is defined
-        - (template.disks | default([]) | length) > 0
-        - (template.disks[0].size | replace('GiB', '') | int) > (dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage | replace('Gi', '') | int)
+# This step shouldn't apply for kubevirt version > 4.9 (or earlier potentially)
+#    - include_tasks: expand_disk.yml
+#      loop: "{{ nodes }}"
+#      loop_control:
+#        loop_var: template
+#      vars:
+#        owner_uid: "{{ new_vms[template.name].metadata.uid | default(None) }}"
+#      when:
+#        - nodes is defined
+#        - template.template is defined
+#        - (template.disks | default([]) | length) > 0
+#        - (template.disks[0].size | replace('GiB', '') | int) > (dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage | replace('Gi', '') | int)
 
     - include_tasks: wait_vm.yml
       loop: "{{ nodes }}"
