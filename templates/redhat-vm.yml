@@ -43,7 +43,7 @@ spec:
         storage:
           resources:
             requests:
-              storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage)) | replace('GiB', 'Gi') }}
+              storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.storage.resources.requests.storage)) | replace('GiB', 'Gi') }}
           storageClassName: {{ pvc_storage_class }}
       status: {}
   running: false
