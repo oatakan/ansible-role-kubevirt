@@ -33,20 +33,17 @@ spec:
       spec:
         source:
 {% if template.template is defined %}
-          pvc:
+          storage:
             namespace: {{ template_namespace }}
             name: {{ dv_template_disk_info.resources[0].metadata.name }}
 {% else %}
           blank: {}
 {% endif %}
-        pvc:
-          accessModes:
-            - ReadWriteOnce
+        storage:
           resources:
             requests:
               storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage)) | replace('GiB', 'Gi') }}
           storageClassName: {{ pvc_storage_class }}
-          volumeMode: Filesystem
       status: {}
   running: false
   template:

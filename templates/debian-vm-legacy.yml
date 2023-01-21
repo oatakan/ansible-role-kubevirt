@@ -5,7 +5,8 @@ metadata:
 {% if template.networks is defined and template.networks|length > 0 %}
     k8s.v1.cni.cncf.io/networks: "{{ template.networks | map(attribute='name') | join(', ') }}"
 {% endif %}
-    name.os.template.kubevirt.io/win2k12r2: {{ template.name }}
+    kubevirt.io/latest-observed-api-version: v1alpha3
+    kubevirt.io/storage-observed-api-version: v1alpha3
   name: {{ template.name }}
   generation: 2
   namespace: '{{ target_namespace }}'
@@ -13,15 +14,14 @@ metadata:
     app: {{ template.name }}
     app_name: {{ template.app_name }}
     role: {{ template.role }}
-    os.template.kubevirt.io/win2k12r2: 'true'
 {% if template.template is defined %}
     vm.kubevirt.io/template: {{ template.template }}
     vm.kubevirt.io/template-namespace: {{ template_namespace }}
     vm.kubevirt.io/template.revision: '1'
-    vm.kubevirt.io/template.version: v{{ win_os_template_version }}
+    vm.kubevirt.io/template.version: v{{ rhel_os_template_version }}
 {% endif %}
     workload.template.kubevirt.io/server: 'true'
-    os.family: windows
+    os.family: {{ vm_os_type }}
 spec:
   dataVolumeTemplates:
     - apiVersion: {{ api_version_dv }}
@@ -33,17 +33,20 @@ spec:
       spec:
         source:
 {% if template.template is defined %}
-          storage:
+          pvc:
             namespace: {{ template_namespace }}
             name: {{ dv_template_disk_info.resources[0].metadata.name }}
 {% else %}
           blank: {}
 {% endif %}
-        storage:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
           resources:
             requests:
               storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage)) | replace('GiB', 'Gi') }}
           storageClassName: {{ pvc_storage_class }}
+          volumeMode: Filesystem
       status: {}
   running: false
   template:
@@ -57,16 +60,6 @@ spec:
         role: {{ template.role }}
     spec:
       domain:
-        clock:
-          timer:
-            hpet:
-              present: false
-            hyperv: {}
-            pit:
-              tickPolicy: delay
-            rtc:
-              tickPolicy: catchup
-          utc: {}
         cpu:
           cores: {{ template.cpu }}
           sockets: 1
@@ -80,25 +73,17 @@ spec:
               disk:
                 bus: {{ template.boot_disk_bus | default('virtio') }}
               name: disk0
-{% if template.template is defined %}
-{% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
-            - bootOrder: 2
-              cdrom:
-                bus: sata
-              name: configmap-volume
-{% else %}
-            - bootOrder: 2
-              cdrom:
-                bus: sata
-              name: cd-drive-1
-{% endif %}
-{% else %}
 {% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
             - bootOrder: 2
               cdrom:
                 bus: sata
               name: boot-iso
-{% endif %}
+{% else %}
+            - name: cloudinitdisk
+              bootOrder: 3
+              cdrom:
+                bus: sata
+                readonly: true
 {% endif %}
           interfaces:
 {% if template.networks is defined and template.networks|length > 0 %}
@@ -108,29 +93,12 @@ spec:
               name: nic{{ (loop.index-1)|string }}
 {% endfor %}
 {% else %}
-            - bootOrder: 3
+            - bootOrder: 2
               bridge: {}
               model: virtio
               name: nic0
 {% endif %}
-        features:
-          acpi: {}
-          apic: {}
-          hyperv:
-            relaxed: {}
-            spinlocks:
-              spinlocks: 8191
-            vapic: {}
-{% if template.efi is defined and template.efi|bool %}
-          smm:
-            enabled: true
-        firmware:
-          bootloader:
-            efi: {}
-{% endif %}
 {% if (template.efi is defined and template.efi|bool) or bootloader_efi is defined %}
-          smm:
-            enabled: true
         firmware:
           bootloader:
 {% if bootloader_efi is defined %}
@@ -138,6 +106,9 @@ spec:
 {% else %}
             efi: {}
 {% endif %}
+        features:
+          smm:
+            enabled: true
 {% endif %}
         machine:
           type: ''
@@ -162,20 +133,23 @@ spec:
         - dataVolume:
             name: {{ template.name }}-disk0
           name: disk0
-{% if template.template is defined %}
-{% if kubevirt_use_configmap is defined and kubevirt_use_configmap|bool %}
-        - name: configmap-volume
-          configMap:
-            name: '{{ template.name }}-configmap'
-{% else %}
-        - name: cd-drive-1
-          persistentVolumeClaim:
-            claimName: {{ iso_pvc_name }}
-{% endif %}
-{% else %}
 {% if boot_iso_pvc_name is defined and boot_iso_pvc_name|length > 0 %}
         - name: boot-iso
           persistentVolumeClaim:
             claimName: {{ boot_iso_pvc_name }}
+{% else %}
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+{% if template.networks is defined and template.networks|length > 0 %}
+{% set network_data_content %}
+{% include 'templates/cloud_init-network.yml.j2' %}
+{% endset %}
+            networkData: |
+{{ network_data_content | indent(14, True) }}
 {% endif %}
+{% set user_data_content %}
+{% include 'templates/cloud_init-user.yml.j2' %}
+{% endset %}
+            userData: |
+{{ user_data_content | indent(14, True) }}
 {% endif %}
