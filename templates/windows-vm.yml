@@ -144,7 +144,8 @@ spec:
         resources:
           requests:
             memory: {{ ((template.memory|int) * kubevirt_memory_overcommit_ratio) | int | string }}Mi
-        memory: {{ template.memory }}Mi
+        memory:
+          guest: {{ template.memory }}Mi
       evictionStrategy: LiveMigrate
       hostname: {{ template.name }}
       networks:
