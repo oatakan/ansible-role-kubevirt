@@ -25,7 +25,7 @@ os_template_namespace: openshift
 kubevirt_use_configmap: yes
 kubevirt_deprov_wait_vm: yes
 
-kubevirt_memory_overcommit_ratio: 0.5
+kubevirt_memory_overcommit_ratio: 0.75
 
 ansible_port: 22
 instance_wait_retry_limit: 600
