@@ -1,15 +1,31 @@
 ---
 
-- name: wait for disk (dv)
+- name: wait for disk (pvc)
   k8s_info:
-    api_version: "{{ api_version_dv }}"
-    kind: DataVolume
+    api_version: "{{ api_version_pvc }}"
+    kind: PersistentVolumeClaim
     name: '{{ template.name }}-disk0'
     namespace: '{{ target_namespace }}'
     verify_ssl: no
     api_key: "{{ api_key }}"
-  register: dv_info
-  until: (dv_info.resources[0].status.phase | default('')) == 'Succeeded'
+  register: pvc_info
+  until:
+    - pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] is defined
+    - (pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] | default('')) == 'Succeeded'
   retries: 300
   delay: 5
   ignore_errors: yes
+
+#- name: wait for disk (dv)
+#  k8s_info:
+#    api_version: "{{ api_version_dv }}"
+#    kind: DataVolume
+#    name: '{{ template.name }}-disk0'
+#    namespace: '{{ target_namespace }}'
+#    verify_ssl: no
+#    api_key: "{{ api_key }}"
+#  register: dv_info
+#  until: (dv_info.resources[0].status.phase | default('')) == 'Succeeded'
+#  retries: 300
+#  delay: 5
+#  ignore_errors: yes

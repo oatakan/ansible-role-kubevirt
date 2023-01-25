@@ -37,6 +37,7 @@ vm_failed: no
 
 api_version_virtual_machine: kubevirt.io/v1
 api_version_dv: cdi.kubevirt.io/v1beta1
+api_version_pvc: v1
 
 default_ports:
   windows: 5986
