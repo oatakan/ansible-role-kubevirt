@@ -5,7 +5,7 @@ ethernets:
 {% for network in template.networks %}
   {{ network.device_name | default(network.nic_name) }}:
     addresses:
-      - {{ network.ip }}/{{ (network.ip + '/' + network.netmask) | ipaddr('prefix') }}
+      - {{ network.ip }}/{{ (network.ip + '/' + network.netmask) | ansible.utils.ipaddr('prefix') }}
     gateway4: {{ network.gateway }}
 {% if network.dns_servers is defined %}
     nameservers:

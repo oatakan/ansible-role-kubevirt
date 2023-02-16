@@ -21,16 +21,35 @@
   delay: 5
   ignore_errors: yes
 
-- name: upload iso file to data volume
-  kubevirt_cdi_upload:
-    pvc_namespace: '{{ target_namespace }}'
-    pvc_name: '{{ iso_pvc_name }}'
-    upload_host: '{{ kubevirt_upload_proxy_url }}'
-    upload_host_validate_certs: false
-    path: "{{ playbook_dir }}/{{ temp_directory }}/{{ iso_file }}"
+- name: upload token request
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cdi-upload-token-request.yml') | from_yaml }}"
     validate_certs: no
     api_key: "{{ api_key }}"
-  register: disk_iso_file
-  until: disk_iso_file is success
-  delay: 3
-  retries: 5
+  register: cdi_upload_token_request
+
+- name: upload iso file to data volume
+  ansible.builtin.uri:
+    url: '{{ kubevirt_upload_proxy_url }}/{{ kubevirt_api_version }}/upload'
+    method: POST
+    src: '{{ playbook_dir }}/{{ temp_directory }}/{{ iso_file }}'
+    force_basic_auth: yes
+    headers:
+      Authorization: 'Bearer {{ cdi_upload_token_request.result.status.token }}'
+    validate_certs: false
+  register: upload_result
+
+#- name: upload iso file to data volume
+#  kubevirt_cdi_upload:
+#    pvc_namespace: '{{ target_namespace }}'
+#    pvc_name: '{{ iso_pvc_name }}'
+#    upload_host: '{{ kubevirt_upload_proxy_url }}'
+#    upload_host_validate_certs: false
+#    path: "{{ playbook_dir }}/{{ temp_directory }}/{{ iso_file }}"
+#    validate_certs: no
+#    api_key: "{{ api_key }}"
+#  register: disk_iso_file
+#  until: disk_iso_file is success
+#  delay: 3
+#  retries: 5

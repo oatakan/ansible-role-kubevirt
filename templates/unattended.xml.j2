@@ -177,7 +177,7 @@
 {% if template.networks is defined and template.networks[0].ip is defined and template.networks[0].gateway is defined and template.networks[0].netmask is defined %}
 {% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c powershell -Command "New-NetIPAddress –IPAddress {{ template.networks[0].ip }} -DefaultGateway {{ template.networks[0].gateway }} -PrefixLength {{ (template.networks[0].ip + '/' + template.networks[0].netmask) | ipaddr('prefix') }} -InterfaceIndex (Get-NetAdapter | Where-Object { ($_.Name -like '*Ethernet*') -and ($_.Status -like 'Up') })[0].InterfaceIndex"</CommandLine>
+                    <CommandLine>cmd.exe /c powershell -Command "New-NetIPAddress –IPAddress {{ template.networks[0].ip }} -DefaultGateway {{ template.networks[0].gateway }} -PrefixLength {{ (template.networks[0].ip + '/' + template.networks[0].netmask) | ansible.utils.ipaddr('prefix') }} -InterfaceIndex (Get-NetAdapter | Where-Object { ($_.Name -like '*Ethernet*') -and ($_.Status -like 'Up') })[0].InterfaceIndex"</CommandLine>
                     <Description>Set static ip</Description>
                     <Order>50</Order>
                     <RequiresUserInput>true</RequiresUserInput>

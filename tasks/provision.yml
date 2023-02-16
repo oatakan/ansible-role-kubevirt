@@ -48,17 +48,36 @@
       when: nodes is defined
 
     - name: start the vm(s)
-      kubevirt_vm:
-        state: running
-        name: '{{ template.name }}'
-        namespace: '{{ target_namespace }}'
-        wait: no
+      kubernetes.core.k8s:
+        state: present
+        merge_type: merge
         validate_certs: no
         api_key: "{{ api_key }}"
+        definition:
+          apiVersion: "{{ api_version_virtual_machine }}"
+          kind: VirtualMachine
+          metadata:
+            name: '{{ template.name }}'
+            namespace: '{{ target_namespace }}'
+          spec:
+            running: true
       loop: "{{ nodes }}"
       loop_control:
         loop_var: template
       when: nodes is defined
+
+#    - name: start the vm(s)
+#      kubevirt_vm:
+#        state: running
+#        name: '{{ template.name }}'
+#        namespace: '{{ target_namespace }}'
+#        wait: no
+#        validate_certs: no
+#        api_key: "{{ api_key }}"
+#      loop: "{{ nodes }}"
+#      loop_control:
+#        loop_var: template
+#      when: nodes is defined
 
     - include_tasks: wait_for_remote.yml
       loop: "{{ nodes }}"
