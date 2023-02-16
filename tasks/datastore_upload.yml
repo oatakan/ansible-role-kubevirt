@@ -38,7 +38,10 @@
     headers:
       Authorization: 'Bearer {{ cdi_upload_token_request.result.status.token }}'
     validate_certs: false
-  register: upload_result
+  register: disk_iso_file
+  until: disk_iso_file is success
+  delay: 3
+  retries: 5
 
 #- name: upload iso file to data volume
 #  kubevirt_cdi_upload:
