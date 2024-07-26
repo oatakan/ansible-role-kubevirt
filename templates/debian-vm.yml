@@ -59,9 +59,13 @@ spec:
     spec:
       domain:
         cpu:
-          cores: {{ template.cpu }}
-          sockets: 1
-          threads: 2
+          sockets: {{ template.cpu }}
+{% if template.cores is defined %}
+          cores: {{ template.cores }}
+{% endif %}
+{% if template.threads is defined %}
+          threads: {{ template.threads }}
+{% endif %}
 {% if template.cpu_model is defined and template.cpu_model == 'host-passthrough' %}
           model: {{ template.cpu_model }}
 {% endif %}

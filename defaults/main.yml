@@ -44,3 +44,5 @@ api_version_pvc: v1
 default_ports:
   windows: 5986
   redhat: 22
+
+winrm_enable_script_url: https://raw.githubusercontent.com/ansible/ansible-documentation/devel/examples/scripts/ConfigureRemotingForAnsible.ps1
