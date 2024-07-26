@@ -45,7 +45,8 @@ spec:
               storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.storage.resources.requests.storage)) | replace('GiB', 'Gi') }}
           storageClassName: {{ pvc_storage_class }}
       status: {}
-  running: false
+  runStrategy: Manual
+  running: null
   template:
     metadata:
       labels:

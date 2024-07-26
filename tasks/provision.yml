@@ -41,11 +41,11 @@
 #        - (template.disks | default([]) | length) > 0
 #        - (template.disks[0].size | replace('GiB', '') | int) > (dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage | replace('Gi', '') | int)
 
-    - include_tasks: wait_vm.yml
-      loop: "{{ nodes }}"
-      loop_control:
-        loop_var: template
-      when: nodes is defined
+#    - include_tasks: wait_vm.yml
+#      loop: "{{ nodes }}"
+#      loop_control:
+#        loop_var: template
+#      when: nodes is defined
 
     - name: start the vm(s)
       kubernetes.core.k8s:
@@ -60,6 +60,7 @@
             name: '{{ template.name }}'
             namespace: '{{ target_namespace }}'
           spec:
+            runStrategy: null
             running: true
       loop: "{{ nodes }}"
       loop_control:
