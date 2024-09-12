@@ -48,3 +48,5 @@ default_ports:
 winrm_enable_script_url: https://raw.githubusercontent.com/ansible/ansible-documentation/devel/examples/scripts/ConfigureRemotingForAnsible.ps1
 
 kubevirt_controller_in_cluster: false # if the Ansible controller is running inside the cluster or from outside. This should be set to false in most instances.
+
+kubevirt_clear_auth_key: false # clear authentication token or not
