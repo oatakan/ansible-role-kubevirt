@@ -50,6 +50,10 @@ spec:
   running: null
   template:
     metadata:
+      annotations:
+        vm.kubevirt.io/flavor: medium
+        vm.kubevirt.io/os: rhel9
+        vm.kubevirt.io/workload: server
       labels:
         kubevirt.io/domain: {{ template.name }}
         kubevirt.io/size: medium

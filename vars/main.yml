@@ -8,8 +8,10 @@ vm_os_type: "{{ nodes_os_type[template.name] | lower | default('redhat') }}"
 
 set_network_to_private: "([Activator]::CreateInstance([Type]::GetTypeFromCLSID([Guid]'{DCB00C01-570F-4A9B-8D69-199FDBA5723B}'))).GetNetworkConnections() | % {$_.GetNetwork().SetCategory(1)}"
 
+_remote_host: "{{ template_svc.result.spec.clusterIP if kubevirt_controller_in_cluster else template_vmi.resources[0].status.nodeName }}"
+
 # if using named network we'll assume direct connection and won't use service
-remote_host: "{{ template.networks[0].ip if (template.networks[0].ip is defined) else template_vmi.resources[0].status.nodeName }}"
+remote_host: "{{ template.networks[0].ip if (template.networks[0].ip is defined) else  _remote_host }}"
 remote_port: "{{ default_ports[vm_os_type] if (template.networks[0].ip is defined) else template_svc.result.spec.ports[0].nodePort }}"
 
 template_iso_pvc_name: "iso-{{ awx_job_id | default('') }}-{{ (template.name + '_' + (template.pvc_iso_template | default(''))) | to_uuid }}"

@@ -10,8 +10,10 @@
     api_key: "{{ api_key }}"
   register: pvc_info
   until:
-    - pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] is defined
-    - (pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] | default('')) == 'Succeeded'
+    - pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.condition.running.reason'] is defined
+    - (pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.condition.running.reason'] | default('')) == 'Completed'
+#    - pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] is defined
+#    - (pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] | default('')) == 'Succeeded'
   retries: 300
   delay: 5
   ignore_errors: yes
