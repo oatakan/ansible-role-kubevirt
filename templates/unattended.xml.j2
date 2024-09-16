@@ -4,19 +4,19 @@
         <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <UserAccounts>
                 <AdministratorPassword>
-                    <Value>{{ ansible_password | b64encode | b64decode }}</Value>
+                    <Value>{{ ansible_password }}</Value>
                     <PlainText>true</PlainText>
                 </AdministratorPassword>
                 <LocalAccounts>
                     <LocalAccount wcm:action="add">
                         <Password>
-                            <Value>{{ ansible_password | b64encode | b64decode }}</Value>
+                            <Value>{{ ansible_password }}</Value>
                             <PlainText>true</PlainText>
                         </Password>
-                        <Description>{{ template.user_name | default('vagrant') }} User</Description>
-                        <DisplayName>{{ template.user_name | default('vagrant') }}</DisplayName>
+                        <Description>{{ template.user_name | default(ansible_user) | default('vagrant') }} User</Description>
+                        <DisplayName>{{ template.user_name | default(ansible_user) | default('vagrant') }}</DisplayName>
                         <Group>Administrators</Group>
-                        <Name>{{ template.user_name | default('vagrant') }}</Name>
+                        <Name>{{ template.user_name | default(ansible_user) | default('vagrant') }}</Name>
                     </LocalAccount>
                 </LocalAccounts>
             </UserAccounts>
@@ -35,10 +35,10 @@
             </OOBE>
             <AutoLogon>
                 <Password>
-                    <Value>{{ ansible_password | b64encode | b64decode }}</Value>
+                    <Value>{{ ansible_password }}</Value>
                     <PlainText>true</PlainText>
                 </Password>
-                <Username>{{ template.user_name | default('vagrant') }}</Username>
+                <Username>{{ template.user_name | default(ansible_user) | default('vagrant') }}</Username>
                 <Enabled>true</Enabled>
             </AutoLogon>
             <FirstLogonCommands>
