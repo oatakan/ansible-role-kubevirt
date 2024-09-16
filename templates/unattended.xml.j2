@@ -43,16 +43,22 @@
             </AutoLogon>
             <FirstLogonCommands>
                 <SynchronousCommand wcm:action="add">
+                    <CommandLine>cmd.exe /c powershell -Command "([adsi]("WinNT://./{{ template.user_name | default(ansible_user) | default('vagrant') }}, user")).PSBase.Invoke("SetPassword", "{{ ansible_password }}")"</CommandLine>
+                    <Description>Set password for the user</Description>
+                    <Order>1</Order>
+                    <RequiresUserInput>true</RequiresUserInput>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force"</CommandLine>
                     <Description>Set Execution Policy 64 Bit</Description>
-                    <Order>1</Order>
+                    <Order>2</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
 {% if not '2008' in (distro_name | default(template.template)) %}
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c powershell -Command "Set-NetConnectionProfile -NetworkCategory Private"</CommandLine>
                     <Description>Set network connection profile to private</Description>
-                    <Order>2</Order>
+                    <Order>3</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
@@ -131,13 +137,13 @@
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c reg add "HKLM\System\CurrentControlSet\Control\Network\NewNetworkWindowOff" /f</CommandLine>
                     <Description>Network prompt</Description>
-                    <Order>2</Order>
+                    <Order>3</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c powershell -Command "{{ set_network_to_private }}"</CommandLine>
                     <Description>Set network connection profile to private</Description>
-                    <Order>3</Order>
+                    <Order>4</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
 {% endif %}
