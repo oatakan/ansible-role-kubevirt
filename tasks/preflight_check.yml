@@ -38,9 +38,9 @@
     - name: fail with message
       fail:
         msg: "data volume/pvc ({{ template.template }}-template-disk0) could not be found, make sure it exists"
-      when: >-
-        ( dv_template_disk_info.resources | default([]) ) | length == 0 or
-        ( pvc_template_disk_info.resources | default([]) ) | length == 0
+      when:
+        - ( dv_template_disk_info.resources | default([]) ) | length == 0
+        - ( pvc_template_disk_info.resources | default([]) ) | length == 0
 
     - name: get template info
       k8s_info:
