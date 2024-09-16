@@ -78,11 +78,18 @@
 
 - name: set os distro name
   set_fact:
-    distro_name: '{{ pvc_template_disk_info.resources[0].metadata.labels["os.distribution"] | default(template_iso_pvc_info.resources[0].metadata.labels["os.distribution"]) | default(None) }}'
+    distro_name: >-
+      {{ pvc_template_disk_info.resources[0].metadata.labels["os.distribution"] |
+      default(template_iso_pvc_info.resources[0].metadata.labels["os.distribution"]) |
+      default(None) }}
 
 - name: set os type
   set_fact:
-    nodes_os_type: '{{ nodes_os_type | default({}) | combine({template.name:template.os_type | default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) | default("redhat")}) | lower }}'
+    nodes_os_type: >-
+      {{ nodes_os_type | default({}) | combine({template.name:template.os_type |
+      default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) |
+      default(template_iso_pvc_info.resources[0].metadata.labels["os.family"]) |
+      default("redhat")}) | lower }}
 
 - name: enable clone role binding
   kubernetes.core.k8s:
