@@ -17,6 +17,8 @@ remote_port: "{{ default_ports[vm_os_type] if (template.networks[0].ip is define
 
 template_iso_pvc_name: "iso-{{ awx_job_id | default('') }}-{{ (template.name + '_' + (template.pvc_iso_template | default(''))) | to_uuid }}"
 
+template_pvc_storage_size: "{{ (((pvc_template_disk_info.resources[0].spec.resources.requests.storage/1024/1024/204)|round(0, 'ceil')|int) + 1)|string }}Gi"
+
 os_version_reg_pattern: '.*v((\d+).(\d+).(\d+))$'
 
 rhel_os_template_name: rhel8-server-medium

@@ -36,7 +36,7 @@ spec:
 {% if template.template is defined %}
           pvc:
             namespace: {{ template_namespace }}
-            name: {{ dv_template_disk_info.resources[0].metadata.name }}
+            name: {{ pvc_template_disk_info.resources[0].metadata.name }}
 {% else %}
           blank: {}
 {% endif %}
@@ -45,7 +45,7 @@ spec:
             - ReadWriteOnce
           resources:
             requests:
-              storage: {{ (template.disks[0].size | default(dv_template_disk_info.resources[0].spec.pvc.resources.requests.storage)) | replace('GiB', 'Gi') }}
+              storage: {{ (template.disks[0].size | default(template_pvc_storage_size)) | replace('GiB', 'Gi') }}
           storageClassName: {{ pvc_storage_class }}
           volumeMode: Filesystem
       status: {}

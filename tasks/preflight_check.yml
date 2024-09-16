@@ -25,10 +25,22 @@
         api_key: "{{ api_key }}"
       register: dv_template_disk_info
 
+    - name: check if template pvc exists
+      k8s_info:
+        api_version: v1
+        kind: PersistentVolumeClaim
+        name: '{{ template.template }}-template-disk0'
+        namespace: '{{ template_namespace }}'
+        validate_certs: no
+        api_key: "{{ api_key }}"
+      register: pvc_template_disk_info
+
     - name: fail with message
       fail:
-        msg: "data volume ({{ template.template }}-template-disk0) could not be found, make sure it exists"
-      when: ( dv_template_disk_info.resources | default([]) ) | length == 0
+        msg: "data volume/pvc ({{ template.template }}-template-disk0) could not be found, make sure it exists"
+      when: >-
+        ( dv_template_disk_info.resources | default([]) ) | length == 0 or
+        ( pvc_template_disk_info.resources | default([]) ) | length == 0
 
     - name: get template info
       k8s_info:
@@ -66,7 +78,7 @@
 
 - name: set os distro name
   set_fact:
-    distro_name: '{{ dv_template_disk_info.resources[0].metadata.labels["os.distribution"] | default(template_iso_pvc_info.resources[0].metadata.labels["os.distribution"]) | default(None) }}'
+    distro_name: '{{ pvc_template_disk_info.resources[0].metadata.labels["os.distribution"] | default(template_iso_pvc_info.resources[0].metadata.labels["os.distribution"]) | default(None) }}'
 
 - name: set os type
   set_fact:
