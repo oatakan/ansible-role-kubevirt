@@ -80,6 +80,7 @@
   set_fact:
     distro_name: >-
       {{ pvc_template_disk_info.resources[0].metadata.labels["os.distribution"] |
+      default(pvc_template_disk_info.resources[0].metadata.labels["os.distribution"]) |
       default(template_iso_pvc_info.resources[0].metadata.labels["os.distribution"]) |
       default(None) }}
 
@@ -88,6 +89,7 @@
     nodes_os_type: >-
       {{ nodes_os_type | default({}) | combine({template.name:template.os_type |
       default(dv_template_disk_info.resources[0].metadata.labels["os.family"]) |
+      default(pvc_template_disk_info.resources[0].metadata.labels["os.family"]) |
       default(template_iso_pvc_info.resources[0].metadata.labels["os.family"]) |
       default("redhat")}) | lower }}
 

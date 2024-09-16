@@ -17,7 +17,9 @@ remote_port: "{{ default_ports[vm_os_type] if (template.networks[0].ip is define
 
 template_iso_pvc_name: "iso-{{ awx_job_id | default('') }}-{{ (template.name + '_' + (template.pvc_iso_template | default(''))) | to_uuid }}"
 
+template_dv_storage_size: "{{ dv_template_disk_info.resources[0].spec.storage.resources.requests.storage }}"
 template_pvc_storage_size: "{{ ((((pvc_template_disk_info.resources[0].spec.resources.requests.storage | int) / 1024 / 1024 / 1024)|round(0, 'ceil')|int) + 1)|string }}Gi"
+template_storage_size: "{{ (template.disks[0].size | default(template_dv_storage_size) | default(template_pvc_storage_size)) | replace('GiB', 'Gi') }}"
 
 os_version_reg_pattern: '.*v((\d+).(\d+).(\d+))$'
 

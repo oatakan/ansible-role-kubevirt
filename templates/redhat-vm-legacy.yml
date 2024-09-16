@@ -45,7 +45,7 @@ spec:
             - ReadWriteOnce
           resources:
             requests:
-              storage: {{ (template.disks[0].size | default(template_pvc_storage_size)) | replace('GiB', 'Gi') }}
+              storage: {{ template_storage_size }}
           storageClassName: {{ pvc_storage_class }}
           volumeMode: Filesystem
       status: {}
