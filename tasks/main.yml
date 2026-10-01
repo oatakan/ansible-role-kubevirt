@@ -6,6 +6,10 @@
     ansible_password: "{{ ansible_password | default('') }}"
   no_log: true
 
+- name: Reset provisioning state
+  ansible.builtin.set_fact:
+    vm_failed: false
+
 - block:
     - name: authenticate with cluster
       include_role:

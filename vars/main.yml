@@ -18,7 +18,7 @@ remote_port: "{{ default_ports[vm_os_type] if (template.networks[0].ip is define
 template_iso_pvc_name: "iso-{{ awx_job_id | default('') }}-{{ (template.name + '_' + (template.pvc_iso_template | default(''))) | to_uuid }}"
 
 template_dv_storage_size: "{{ dv_template_disk_info.resources[0].spec.storage.resources.requests.storage }}"
-template_pvc_storage_size: "{{ ((((pvc_template_disk_info.resources[0].spec.resources.requests.storage | int) / 1024 / 1024 / 1024)|round(0, 'ceil')|int) + 1)|string }}Gi"
+template_pvc_storage_size: '{{ pvc_template_disk_info.resources[0].spec.resources.requests.storage }}'
 template_storage_size: "{{ (template.disks[0].size | default(template_dv_storage_size) | default(template_pvc_storage_size)) | replace('GiB', 'Gi') }}"
 
 os_version_reg_pattern: '.*v((\d+).(\d+).(\d+))$'
@@ -31,6 +31,6 @@ win_os_template_name: windows2k19-server-medium
 win_os_template_jmesquery: "[?starts_with(name, '{{ win_os_template_name }}')].labels"
 win_os_template_version: "{{ (os_templates.resources | map(attribute='metadata') | list | to_json | from_json | json_query(win_os_template_jmesquery))[0]['template.kubevirt.io/version'] | regex_replace(os_version_reg_pattern, '\\1') }}"
 
-win_os_c_drive_partition: "{{ '4' if (template.efi is defined and template.efi|bool) else '2' }}"
+win_os_c_drive_partition: "{{ '4' if (template.efi | default(bootloader_efi is mapping) | bool) else '2' }}"
 
 kubevirt_launcher_image: "{{ kubevirt_virt_launcher_images['cnv'] if ((kubevirt_operator_namespace | default('')) == 'openshift-cnv') else kubevirt_virt_launcher_images['kubevirt'] }}"

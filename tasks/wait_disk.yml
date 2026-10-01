@@ -1,33 +1,15 @@
 ---
-
-- name: wait for disk (pvc)
-  k8s_info:
-    api_version: "{{ api_version_pvc }}"
-    kind: PersistentVolumeClaim
+- name: Require completed VM root DataVolume
+  kubernetes.core.k8s_info:
+    api_version: '{{ api_version_dv }}'
+    kind: DataVolume
     name: '{{ template.name }}-disk0'
     namespace: '{{ target_namespace }}'
-    verify_ssl: no
-    api_key: "{{ api_key }}"
-  register: pvc_info
-  until:
-    - pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.condition.running.reason'] is defined
-    - (pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.condition.running.reason'] | default('')) == 'Completed'
-#    - pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] is defined
-#    - (pvc_info.resources[0].metadata.annotations['cdi.kubevirt.io/storage.pod.phase'] | default('')) == 'Succeeded'
-  retries: 300
-  delay: 5
-  ignore_errors: yes
-
-#- name: wait for disk (dv)
-#  k8s_info:
-#    api_version: "{{ api_version_dv }}"
-#    kind: DataVolume
-#    name: '{{ template.name }}-disk0'
-#    namespace: '{{ target_namespace }}'
-#    verify_ssl: no
-#    api_key: "{{ api_key }}"
-#  register: dv_info
-#  until: (dv_info.resources[0].status.phase | default('')) == 'Succeeded'
-#  retries: 300
-#  delay: 5
-#  ignore_errors: yes
+    verify_ssl: false
+    api_key: '{{ api_key }}'
+  register: vm_disk_info
+  until: >-
+    vm_disk_info.resources | length > 0 and
+    vm_disk_info.resources[0].status.phase | default('') == 'Succeeded'
+  retries: '{{ instance_wait_retry_limit }}'
+  delay: 3

@@ -44,9 +44,19 @@ api_version_pvc: v1
 default_ports:
   windows: 5986
   redhat: 22
+  debian: 22
 
 winrm_enable_script_url: https://raw.githubusercontent.com/ansible/ansible-documentation/devel/examples/scripts/ConfigureRemotingForAnsible.ps1
 
 kubevirt_controller_in_cluster: false # if the Ansible controller is running inside the cluster or from outside. This should be set to false in most instances.
 
 kubevirt_clear_auth_key: false # clear authentication token or not
+
+# Empty inherits the cluster eviction policy.
+kubevirt_eviction_strategy: ''
+kubevirt_shutdown_grace_period: 120
+
+# Create source-namespace permission rather than assuming an external
+# ClusterRole already exists. Disable to use kubevirt_clone_cluster_role_name.
+kubevirt_clone_manage_role: true
+kubevirt_clone_role_name: kubevirt-template-cloner

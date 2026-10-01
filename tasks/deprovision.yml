@@ -1,56 +1,24 @@
 ---
+# The same explicit node YAML drives provision and deprovision, including
+# localhost/AAP runs without a dynamically discovered guest inventory.
+- ansible.builtin.include_tasks: select_deprovision_nodes.yml
 
-- name: remove vm(s)
+- name: Delete the VMs named in the node definition
   kubernetes.core.k8s:
     state: absent
-    api_version: "{{ api_version_virtual_machine }}"
+    api_version: '{{ api_version_virtual_machine }}'
     kind: VirtualMachine
-    name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
+    name: '{{ template.name }}'
     namespace: '{{ target_namespace }}'
-    validate_certs: no
-    api_key: "{{ api_key }}"
-  loop: "{{ ansible_play_hosts }}"
+    verify_ssl: false
+    api_key: '{{ api_key }}'
+  loop: '{{ kubevirt_deprovision_nodes }}'
   loop_control:
-    loop_var: vm
-  when:
-    - nodes is defined
-    - hostvars[vm].labels['vm.kubevirt.io/name'] is defined
-    - (nodes | json_query(query)) | length > 0
-  vars:
-    query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
+    loop_var: template
 
-- name: wait for vm(s) deletion to complete
-  k8s_info:
-    api_version: "{{ api_version_virtual_machine }}"
-    kind: VirtualMachine
-    name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}"
-    namespace: '{{ target_namespace }}'
-    validate_certs: no
-    api_key: "{{ api_key }}"
-  register: vm_info
-  until: (vm_info.resources | default([])) | length == 0
-  retries: "{{ instance_wait_retry_limit }}"
-  delay: 3
-  loop: "{{ ansible_play_hosts }}"
+- name: Wait for VM and owned resources to be removed
+  ansible.builtin.include_tasks: wait_deleted.yml
+  loop: '{{ kubevirt_deprovision_nodes }}'
   loop_control:
-    loop_var: vm
-  when:
-    - kubevirt_deprov_wait_vm | bool
-    - nodes is defined
-    - hostvars[vm].labels['vm.kubevirt.io/name'] is defined
-    - (nodes | json_query(query)) | length > 0
-  vars:
-    query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
-
-- include_tasks: remove_pvc.yml
-  loop: "{{ ansible_play_hosts }}"
-  loop_control:
-    loop_var: vm
-  when:
-    - kubevirt_deprov_wait_vm | bool
-    - nodes is defined
-    - hostvars[vm].labels['vm.kubevirt.io/name'] is defined
-    - (nodes | json_query(query)) | length > 0
-  vars:
-    query: "@[?name==`{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}`]"
-    target_pvc_name: "{{ hostvars[vm].labels['vm.kubevirt.io/name'] }}-disk0"
+    loop_var: template
+  when: kubevirt_deprov_wait_vm | bool

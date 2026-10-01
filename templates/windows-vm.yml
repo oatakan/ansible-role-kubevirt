@@ -5,37 +5,33 @@ metadata:
 {% if template.networks is defined and template.networks|length > 0 %}
     k8s.v1.cni.cncf.io/networks: "{{ template.networks | map(attribute='name') | join(', ') }}"
 {% endif %}
-    name.os.template.kubevirt.io/win2k12r2: {{ template.name }}
+    name.os.template.kubevirt.io/{{ kubevirt_guest_os_id }}: {{ template.name }}
   name: {{ template.name }}
-  generation: 2
   namespace: '{{ target_namespace }}'
   labels:
     app: {{ template.name }}
     app_name: {{ template.app_name }}
     role: {{ template.role }}
-    os.template.kubevirt.io/win2k12r2: 'true'
+    os.template.kubevirt.io/{{ kubevirt_guest_os_id }}: 'true'
 {% if template.template is defined %}
     vm.kubevirt.io/template: {{ template.template }}
     vm.kubevirt.io/template-namespace: {{ template_namespace }}
-    vm.kubevirt.io/template.revision: '1'
-    vm.kubevirt.io/template.version: v{{ win_os_template_version }}
 {% endif %}
     workload.template.kubevirt.io/server: 'true'
     os.family: windows
+    os.distribution: {{ distro_name | default(vm_os_type, true) }}
 spec:
   dataVolumeTemplates:
     - apiVersion: {{ api_version_dv }}
       kind: DataVolume
       metadata:
         name: {{ template.name }}-disk0
-        annotations:
-          cdi.kubevirt.io/storage.bind.immediate.requested: 'true'
       spec:
         source:
 {% if template.template is defined %}
           pvc:
-            namespace: {{ template_namespace }}
-            name: {{ pvc_template_disk_info.resources[0].metadata.name }}
+            namespace: {{ template_image_namespace }}
+            name: {{ template_image_pvc_name }}
 {% else %}
           blank: {}
 {% endif %}
@@ -44,14 +40,12 @@ spec:
             requests:
               storage: {{ template_storage_size }}
           storageClassName: {{ pvc_storage_class }}
-      status: {}
-  runStrategy: Manual
-  running: null
+  runStrategy: Halted
   template:
     metadata:
       annotations:
         vm.kubevirt.io/flavor: medium
-        vm.kubevirt.io/os: windows2k22
+        vm.kubevirt.io/os: {{ kubevirt_guest_os_id }}
         vm.kubevirt.io/workload: server
       labels:
         kubevirt.io/domain: {{ template.name }}
@@ -118,7 +112,7 @@ spec:
 {% endfor %}
 {% else %}
             - bootOrder: 3
-              bridge: {}
+              masquerade: {}
               model: virtio
               name: nic0
 {% endif %}
@@ -130,19 +124,12 @@ spec:
             spinlocks:
               spinlocks: 8191
             vapic: {}
-{% if template.efi is defined and template.efi|bool %}
+{% if template.efi | default(bootloader_efi is mapping) | bool %}
           smm:
             enabled: true
         firmware:
           bootloader:
-            efi: {}
-{% endif %}
-{% if (template.efi is defined and template.efi|bool) or bootloader_efi is defined %}
-          smm:
-            enabled: true
-        firmware:
-          bootloader:
-{% if bootloader_efi is defined %}
+{% if bootloader_efi is mapping %}
             efi: {{ bootloader_efi }}
 {% else %}
             efi: {}
@@ -155,7 +142,9 @@ spec:
             memory: {{ ((template.memory|int) * kubevirt_memory_overcommit_ratio) | int | string }}Mi
         memory:
           guest: {{ template.memory }}Mi
-      evictionStrategy: LiveMigrate
+{% if template.eviction_strategy | default(kubevirt_eviction_strategy) | length > 0 %}
+      evictionStrategy: {{ template.eviction_strategy | default(kubevirt_eviction_strategy) }}
+{% endif %}
       hostname: {{ template.name }}
       networks:
 {% if template.networks is defined and template.networks|length > 0 %}
@@ -168,7 +157,7 @@ spec:
         - name: nic0
           pod: {}
 {% endif %}
-      terminationGracePeriodSeconds: 0
+      terminationGracePeriodSeconds: {{ template.shutdown_grace_period | default(kubevirt_shutdown_grace_period) }}
       volumes:
         - dataVolume:
             name: {{ template.name }}-disk0
