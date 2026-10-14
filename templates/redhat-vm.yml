@@ -12,6 +12,9 @@ metadata:
     app: {{ template.name }}
     app_name: {{ template.app_name }}
     role: {{ template.role }}
+{% if kubevirt_action_id is defined and kubevirt_action_id | string | length > 0 %}
+    automation.ansible.com/action-id: {{ kubevirt_action_id }}
+{% endif %}
 {% if template.template is defined %}
     vm.kubevirt.io/template: {{ template.template }}
     vm.kubevirt.io/template-namespace: {{ template_namespace }}
@@ -25,6 +28,10 @@ spec:
       kind: DataVolume
       metadata:
         name: {{ template.name }}-disk0
+{% if kubevirt_action_id is defined and kubevirt_action_id | string | length > 0 %}
+        labels:
+          automation.ansible.com/action-id: {{ kubevirt_action_id }}
+{% endif %}
       spec:
         source:
 {% if template.template is defined %}
@@ -53,6 +60,9 @@ spec:
         app: {{ template.name }}
         app_name: {{ template.app_name }}
         role: {{ template.role }}
+{% if kubevirt_action_id is defined and kubevirt_action_id | string | length > 0 %}
+        automation.ansible.com/action-id: {{ kubevirt_action_id }}
+{% endif %}
     spec:
       domain:
         cpu:

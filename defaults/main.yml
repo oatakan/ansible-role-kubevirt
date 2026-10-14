@@ -24,6 +24,7 @@ os_template_namespace: openshift
 
 kubevirt_use_configmap: yes
 kubevirt_deprov_wait_vm: yes
+kubevirt_expected_vm_preconditions: {}
 
 kubevirt_memory_overcommit_ratio: 0.75
 

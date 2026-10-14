@@ -1,5 +1,13 @@
 ---
 
+- name: Validate optional KubeVirt action UUID
+  ansible.builtin.assert:
+    that:
+      - kubevirt_action_id is string
+      - kubevirt_action_id is match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$')
+    fail_msg: kubevirt_action_id must be a UUID.
+  when: kubevirt_action_id is defined and kubevirt_action_id | string | length > 0
+
 - include_tasks: preflight_check.yml
 
 - name: provision a new vm ({{ vm_os_type }})
