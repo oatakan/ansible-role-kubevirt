@@ -31,3 +31,4 @@
         oc_auth_type: api
         auth_action: logout
       when: kubevirt_clear_auth_key
+  no_log: true
