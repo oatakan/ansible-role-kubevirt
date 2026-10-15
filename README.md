@@ -90,6 +90,26 @@ only matching nodes. With
 `kubevirt_deprov_wait_vm: true`, it waits for VM/VMI, root DV/PVC, remote Service,
 and unattend ConfigMap garbage collection. It never removes PVC finalizers.
 
+### Deletion precondition input
+
+For guarded deletion, `kubevirt_expected_vm_preconditions` accepts the legacy
+mapping form. When an automation controller may reinterpret numeric-looking
+strings in nested extra vars, pass the same data as one JSON string through
+`kubevirt_expected_vm_preconditions_json` and omit the legacy mapping. For example:
+
+```yaml
+kubevirt_expected_vm_preconditions_json: >-
+  {"example-vm":{"uid":"00000000-0000-4000-8000-000000000001","resourceVersion":"000424242"}}
+```
+
+The JSON object must name exactly the selected VMs, with each entry containing
+only a UUID `uid` and a nonempty, trimmed string `resourceVersion`. The role
+passes those decoded strings unchanged as the Kubernetes delete preconditions;
+it does not coerce resource versions. If both forms are supplied, they must agree
+exactly. Invalid JSON, mismatched names, malformed identifiers, or non-string
+resource versions fail before deletion. Omitting both inputs retains the existing
+empty-default behavior.
+
 The coordinated builder changes and reproducible three-OS lifecycle tests are
 in `hl-build-os-templates`, under `tests/kubevirt`. Install this updated consumer
 before using its versioned-image builder; an older installed role still selects

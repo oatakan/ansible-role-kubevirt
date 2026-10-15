@@ -3,23 +3,8 @@
 # localhost/AAP runs without a dynamically discovered guest inventory.
 - ansible.builtin.include_tasks: select_deprovision_nodes.yml
 
-- name: Require expected VM deletion preconditions to be a mapping
-  ansible.builtin.assert:
-    that:
-      - kubevirt_expected_vm_preconditions is mapping
-    fail_msg: kubevirt_expected_vm_preconditions must be a mapping keyed by VM name.
-
-- name: Require exact precondition coverage for selected VMs
-  ansible.builtin.assert:
-    that:
-      - (kubevirt_deprovision_nodes | map(attribute='name') | list | difference(kubevirt_expected_vm_preconditions.keys() | list) | length) == 0
-      - (kubevirt_expected_vm_preconditions.keys() | list | difference(kubevirt_deprovision_nodes | map(attribute='name') | list) | length) == 0
-    fail_msg: Expected VM deletion preconditions must match the selected VM names exactly.
-  when: kubevirt_expected_vm_preconditions | length > 0
-
-- name: Check each selected VM has a deletion precondition
+- name: Normalize and validate expected VM deletion preconditions
   ansible.builtin.include_tasks: validate_deprovision_preconditions.yml
-  when: kubevirt_expected_vm_preconditions | length > 0
 
 - name: Delete the VMs named in the node definition
   kubernetes.core.k8s:
