@@ -1,0 +1,81 @@
+---
+- name: Require selected VM precondition key
+  ansible.builtin.assert:
+    that:
+      - precondition_node.name in kubevirt_expected_vm_preconditions
+    fail_msg: A selected VM is missing its expected deletion precondition.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition mapping
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name] is mapping
+    fail_msg: A selected VM deletion precondition must be a mapping.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition UID to be defined
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].uid is defined
+    fail_msg: A selected VM deletion precondition must define a UID.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition UID to be a string
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].uid is string
+    fail_msg: A selected VM deletion precondition UID must be a string.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition UID to be a UUID
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].uid is match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$')
+    fail_msg: A selected VM deletion precondition UID must use UUID format.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition resourceVersion to be defined
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion is defined
+    fail_msg: A selected VM deletion precondition must define a resourceVersion.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition resourceVersion to be a string
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion is string
+    fail_msg: A selected VM deletion precondition resourceVersion must be a string.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition resourceVersion to be trimmed
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion == (kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion | trim)
+    fail_msg: A selected VM deletion precondition resourceVersion must be trimmed.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node
+
+- name: Require selected VM precondition resourceVersion to be nonempty
+  ansible.builtin.assert:
+    that:
+      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion | length > 0
+    fail_msg: A selected VM deletion precondition resourceVersion must not be empty.
+  loop: '{{ kubevirt_deprovision_nodes }}'
+  loop_control:
+    loop_var: precondition_node

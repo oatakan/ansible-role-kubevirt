@@ -17,22 +17,8 @@
     fail_msg: Expected VM deletion preconditions must match the selected VM names exactly.
   when: kubevirt_expected_vm_preconditions | length > 0
 
-- name: Validate every selected VM deletion precondition
-  ansible.builtin.assert:
-    that:
-      - precondition_node.name in kubevirt_expected_vm_preconditions
-      - kubevirt_expected_vm_preconditions[precondition_node.name] is mapping
-      - kubevirt_expected_vm_preconditions[precondition_node.name].uid is defined
-      - kubevirt_expected_vm_preconditions[precondition_node.name].uid is string
-      - kubevirt_expected_vm_preconditions[precondition_node.name].uid is match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$')
-      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion is defined
-      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion is string
-      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion == (kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion | trim)
-      - kubevirt_expected_vm_preconditions[precondition_node.name].resourceVersion | length > 0
-    fail_msg: Expected deletion preconditions for {{ precondition_node.name }} require a UUID UID and non-empty resourceVersion.
-  loop: '{{ kubevirt_deprovision_nodes }}'
-  loop_control:
-    loop_var: precondition_node
+- name: Check each selected VM has a deletion precondition
+  ansible.builtin.include_tasks: validate_deprovision_preconditions.yml
   when: kubevirt_expected_vm_preconditions | length > 0
 
 - name: Delete the VMs named in the node definition
